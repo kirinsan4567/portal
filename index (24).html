@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>住まいマネジメント | 住宅ローン・売却益・住み替えのアプリ群</title>
+<meta name="description" content="住宅ローン返済シミュレーター、不動産売却益計算、すみかえNAVI、KIRIN Insights。住まいの意思決定を支えるアプリ群へのポータル。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-deep: #0c2138;
+    --navy-panel: #12314f;
+    --navy-line: #2a4d6d;
+    --cyan-line: #6fd6c9;
+    --cyan-bright: #9be8dd;
+    --ink-paper: #eef4f8;
+    --ink-muted: #9bb0c4;
+    --gold: #e3a54a;
+    --gold-dim: #b9822f;
+    --stamp-free: #4fb8a6;
+    --stamp-paid: #e3a54a;
+
+    --font-display: "Shippori Mincho", serif;
+    --font-jp: "Zen Kaku Gothic New", sans-serif;
+    --font-num: "Space Grotesk", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--navy-deep);
+    color: var(--ink-paper);
+    font-family: var(--font-jp);
+    line-height: 1.75;
+  }
+
+  a { color: inherit; }
+
+  /* ---------- ambient metal-mark texture, fixed across whole page ---------- */
+  .metal-texture {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url('img/metal-pattern-mask.png');
+    background-repeat: repeat;
+    background-size: 340px auto;
+    background-position: center;
+    opacity: 0.11;
+    mix-blend-mode: overlay;
+  }
+  .metal-texture::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.25) 45%, rgba(255,255,255,0.04) 70%);
+    mix-blend-mode: soft-light;
+  }
+
+  /* icon defs render nothing on their own */
+  .icon-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  .ticked { position: relative; }
+  .ticked::before, .ticked::after,
+  .ticked .tick-br, .ticked .tick-bl {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--cyan-line);
+    opacity: 0.75;
+    z-index: 3;
+  }
+  .ticked::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .ticked::after { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+  .ticked .tick-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+  .ticked .tick-br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+  /* ---------- header (over hero) ---------- */
+  header {
+    position: relative;
+    z-index: 5;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 34px 28px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: 0.06em;
+    color: #fff;
+  }
+  .logo-mark .stamp {
+    font-family: var(--font-jp);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    color: var(--cyan-bright);
+    border: 1px solid var(--cyan-line);
+    padding: 4px 8px;
+    background: rgba(12,33,56,0.4);
+  }
+  header nav a {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    color: var(--ink-paper);
+    opacity: 0.85;
+    border-bottom: 1px solid transparent;
+    transition: opacity 0.2s, border-color 0.2s;
+  }
+  header nav a:hover { opacity: 1; border-color: var(--cyan-line); }
+
+  /* ---------- hero with photo ---------- */
+  .hero-bg-wrap {
+    position: relative;
+    z-index: 2;
+    height: min(66vh, 560px);
+    min-height: 420px;
+    overflow: hidden;
+  }
+  .hero-parallax {
+    position: absolute;
+    inset: -12% -4%;
+    width: 108%;
+    height: 128%;
+    will-change: transform;
+  }
+  .hero-bg-wrap img.hero-bg {
+    width: 160%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 20% 68%;
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-bg-wrap img.hero-bg { animation: panright 48s linear infinite; }
+  }
+  @keyframes panright {
+    0%   { transform: translateX(0%); }
+    100% { transform: translateX(-38%); }
+  }
+  .hero-bokeh {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .bokeh-dot {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(155,232,221,0.4) 0%, rgba(155,232,221,0) 72%);
+    filter: blur(1px);
+    mix-blend-mode: screen;
+    opacity: 0;
+  }
+  .hero-scan {
+    position: absolute;
+    left: 0; right: 0;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--cyan-bright) 25%, var(--cyan-bright) 75%, transparent);
+    opacity: 0.22;
+    filter: blur(0.3px);
+    box-shadow: 0 0 8px 1px rgba(155,232,221,0.35);
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .bokeh-dot { animation: bokehFloat 16s ease-in-out infinite; }
+    .bokeh-dot:nth-child(1) { animation-delay: 0s; }
+    .bokeh-dot:nth-child(2) { animation-delay: 3.5s; }
+    .bokeh-dot:nth-child(3) { animation-delay: 7s; }
+    .bokeh-dot:nth-child(4) { animation-delay: 11s; }
+    .hero-scan { animation: scan 14s linear infinite; }
+  }
+  @keyframes bokehFloat {
+    0%   { opacity: 0; transform: translateY(0) scale(0.9); }
+    12%  { opacity: 0.5; }
+    50%  { opacity: 0.7; transform: translateY(-38px) scale(1.05); }
+    88%  { opacity: 0.2; }
+    100% { opacity: 0; transform: translateY(-70px) scale(1.1); }
+  }
+  @keyframes scan {
+    0%   { top: 0%; opacity: 0; }
+    6%   { opacity: 0.22; }
+    48%  { opacity: 0.22; }
+    54%  { top: 100%; opacity: 0; }
+    100% { top: 100%; opacity: 0; }
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(9,24,42,0.35) 0%, rgba(9,24,42,0.55) 45%, var(--navy-deep) 100%),
+      linear-gradient(90deg, rgba(9,24,42,0.55) 0%, rgba(9,24,42,0.05) 45%);
+  }
+  .hero-content {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 28px 56px;
+    z-index: 4;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    color: var(--cyan-bright);
+    margin-bottom: 18px;
+  }
+  .eyebrow::before { content: "// "; color: var(--cyan-line); opacity: 0.6; }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(38px, 6.4vw, 68px);
+    line-height: 1.3;
+    margin: 0 0 22px;
+    color: #fff;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.35);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .eyebrow, h1, .hero-content p.lede {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: rise 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .eyebrow { animation-delay: 0.1s; }
+    h1 { animation-delay: 0.22s; }
+    .hero-content p.lede { animation-delay: 0.4s; }
+  }
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-content p.lede {
+    max-width: 58ch;
+    font-size: 16px;
+    color: var(--ink-paper);
+    opacity: 0.92;
+    margin: 0;
+  }
+
+  /* ---------- lifecycle narrative illustration ---------- */
+  .diagram-wrap {
+    max-width: 1160px;
+    margin: 32px auto 0;
+    padding: 0 28px;
+  }
+  .lifecycle { display: flex; flex-direction: column; }
+  .lifecycle-panel {
+    position: relative;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(74,134,214,0.14), rgba(74,134,214,0.03));
+    border: 1px solid rgba(74,134,214,0.35);
+    padding: 22px 22px 18px;
+    overflow: hidden;
+  }
+
+  .lifecycle-road {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .stop {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    padding: 16px 14px 18px;
+    background: var(--navy-panel);
+    border: 1px solid var(--navy-line);
+    border-top-width: 3px;
+    border-radius: 10px;
+    transition: transform 0.18s ease, background 0.18s ease;
+  }
+  .stop-bignum {
+    position: absolute;
+    right: -4px;
+    top: -16px;
+    font-family: var(--font-num);
+    font-weight: 700;
+    font-size: 74px;
+    line-height: 1;
+    color: rgba(255,255,255,0.08);
+    letter-spacing: -0.02em;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .stop > *:not(.stop-bignum) { position: relative; z-index: 1; }
+  .stop:hover { transform: translateY(-3px); background: #163a5c; }
+  .stop.stop-1 { border-top-color: #a8375f; }
+  .stop.stop-2 { border-top-color: #1e5fa8; }
+  .stop.stop-3 { border-top-color: var(--gold); }
+  .stop-q {
+    font-size: 12.5px;
+    color: var(--ink-paper);
+    line-height: 1.5;
+    height: 44px;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: center;
+  }
+  .stop-icon { width: 46px; height: 46px; flex-shrink: 0; }
+  .stop-icon svg { width: 100%; height: 100%; display: block; }
+  .stop-icon-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stop-appname {
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 10.5px;
+    line-height: 1.35;
+    color: var(--ink-muted);
+    text-align: left;
+  }
+  .stop-label { font-family: var(--font-jp); font-weight: 700; font-size: 14.5px; color: #fff; }
+
+  .stop.sky-label {
+    margin-top: 18px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(74,134,214,0.3);
+    border-top-width: 1px;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+  .stop.sky-label:hover { background: rgba(74,134,214,0.08); }
+
+  .shine-chevron {
+    display: inline-block;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(100deg, #2d5f9e 0%, #9be8dd 45%, #4a86d6 55%, #2d5f9e 100%);
+    background-size: 240% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .shine-chevron { animation: chevron-shine 3.2s linear infinite; }
+  }
+  @keyframes chevron-shine {
+    0% { background-position: 0% center; }
+    100% { background-position: 240% center; }
+  }
+  .road-chevron { align-self: center; }
+  .lifecycle-updrafts {
+    display: flex;
+    gap: 14px;
+    margin: 2px 0 6px;
+  }
+  .lifecycle-updrafts .up-chevron-wrap {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  .up-chevron { transform: rotate(-90deg); }
+
+  @media (max-width: 780px) {
+    .lifecycle-road { flex-direction: column; }
+    .road-chevron { transform: rotate(90deg); }
+    .lifecycle-updrafts { display: none; }
+  }
+
+  /* ---------- cards grid ---------- */
+  .grid-wrap {
+    max-width: 1160px;
+    margin: 68px auto 0;
+    padding: 0 28px 80px;
+  }
+  .grid-heading {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--ink-muted);
+    margin-bottom: 22px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+  }
+  @media (max-width: 780px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--navy-panel);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .card-top {
+    position: relative;
+    overflow: hidden;
+    padding: 22px 24px 20px;
+    min-height: 172px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-top.tint-loan { background: radial-gradient(120% 140% at 15% 15%, rgba(168,55,95,0.28), var(--navy-panel) 65%); }
+  .card-top.tint-sale { background: radial-gradient(120% 140% at 15% 15%, rgba(30,95,168,0.28), var(--navy-panel) 65%); }
+  .card-top.tint-sumikae { background: radial-gradient(120% 140% at 15% 15%, rgba(227,165,74,0.28), var(--navy-panel) 65%); }
+  .card-top.tint-insights { background: radial-gradient(120% 140% at 15% 15%, rgba(74,134,214,0.28), var(--navy-panel) 65%); }
+  .card-bignum {
+    position: absolute;
+    right: -4px;
+    top: -20px;
+    font-family: var(--font-num);
+    font-weight: 700;
+    font-size: 118px;
+    line-height: 1;
+    color: rgba(255,255,255,0.08);
+    letter-spacing: -0.02em;
+    z-index: 0;
+  }
+  .card-head {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .card-head .head-icon { width: 42px; height: 42px; flex-shrink: 0; }
+  .card-head .head-icon svg { width: 100%; height: 100%; display: block; }
+  .card-head h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0;
+    color: #fff;
+  }
+  .card-top p.desc {
+    position: relative;
+    z-index: 1;
+    font-size: 14px;
+    color: #fff;
+    margin: 0;
+  }
+  .card-divider {
+    height: 1px;
+    background: var(--navy-line);
+    margin: 0 24px;
+  }
+
+  .shot-frame {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0a1a2c;
+    border: 1px solid var(--navy-line);
+    box-shadow: 0 14px 30px -14px rgba(0,0,0,0.6);
+  }
+  .shot-chrome {
+    display: flex;
+    gap: 5px;
+    padding: 8px 10px;
+    background: #0f273f;
+  }
+  .shot-chrome span { width: 6px; height: 6px; border-radius: 50%; background: var(--navy-line); }
+  .shot-frame img { display: block; width: 100%; height: auto; }
+  .shot-wrap {
+    padding: 20px 24px 6px;
+    display: flex;
+    justify-content: center;
+  }
+  .shot-wrap .shot-frame { width: 70%; }
+  .shot-wrap.shot-pair {
+    position: relative;
+    height: 220px;
+    padding: 20px 24px 6px;
+    display: block;
+  }
+  .shot-wrap.shot-pair .shot-frame {
+    position: absolute;
+    width: 58%;
+  }
+  .shot-wrap.shot-pair .shot-frame:nth-child(1) {
+    left: 24px; top: 20px;
+    transform: rotate(-3deg);
+    z-index: 1;
+  }
+  .shot-wrap.shot-pair .shot-frame:nth-child(2) {
+    left: 34%; top: 90px;
+    transform: rotate(3deg);
+    z-index: 2;
+    box-shadow: -8px 12px 26px -8px rgba(0,0,0,0.65);
+  }
+  @media (max-width: 520px) {
+    .shot-wrap.shot-pair { height: 260px; }
+  }
+
+  .card-body {
+    padding: 16px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+  }
+  .link-note {
+    font-size: 12.5px;
+    color: var(--cyan-bright);
+    border-top: 1px dashed var(--navy-line);
+    padding-top: 10px;
+    margin-top: 2px;
+  }
+  .card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    text-decoration: none;
+    padding: 10px 16px;
+    border: 1px solid var(--cyan-line);
+    color: var(--cyan-bright);
+    width: fit-content;
+    margin-top: auto;
+    transition: background 0.2s, color 0.2s;
+  }
+  .card-cta:hover { background: var(--cyan-line); color: var(--navy-deep); }
+  .card-cta.paid-cta { border-color: var(--gold); color: var(--gold); }
+  .card-cta.paid-cta:hover { background: var(--gold); color: var(--navy-deep); }
+  .card-cta .arrow { transition: transform 0.2s; }
+  .card-cta:hover .arrow { transform: translateX(3px); }
+
+  /* ---------- FAQ ---------- */
+  .faq-wrap {
+    max-width: 1160px;
+    margin: 28px auto 0;
+    padding: 0 28px;
+  }
+  .faq-panel {
+    padding: 8px 24px 4px;
+  }
+  .faq-item {
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(74,134,214,0.2);
+  }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q {
+    display: flex;
+    gap: 10px;
+    font-family: var(--font-jp);
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+    margin: 0 0 8px;
+  }
+  .faq-q .q-mark { color: var(--gold); flex-shrink: 0; }
+  .faq-a {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    line-height: 1.85;
+    margin: 0;
+    padding-left: 26px;
+  }
+  .faq-a a { color: var(--cyan-bright); text-decoration: underline; }
+
+  footer {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 30px 28px 60px;
+    border-top: 1px solid var(--navy-line);
+    text-align: center;
+  }
+  footer .foot-copyright {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  footer .foot-giraffe {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  footer .foot-x-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+  footer .foot-x-link:hover { color: var(--cyan-bright); }
+  footer .x-icon { width: 11px; height: 11px; }
+</style>
+</head>
+<body>
+
+<div class="metal-texture"></div>
+
+<svg class="icon-defs" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 01 loan: house + rising line -->
+    <symbol id="icon-loan" viewBox="0 0 40 40">
+      <path class="icon-line" d="M6 20 L20 8 L34 20" />
+      <path class="icon-line" d="M10 20 V33 H30 V20" />
+      <path class="icon-line" d="M14 33 V24 H20 V33" />
+      <path class="icon-line" d="M22 17 L26 13 L30 17 M26 13 V19" />
+    </symbol>
+    <!-- 02 sale profit: building + yen -->
+    <symbol id="icon-sale" viewBox="0 0 40 40">
+      <path class="icon-line" d="M9 33 V10 H24 V33" />
+      <path class="icon-line" d="M13 14 H16 M13 19 H16 M13 24 H16 M19 14 H21.5 M19 19 H21.5 M19 24 H21.5" />
+      <path class="icon-line" d="M27 21 L33 14 M27 21 L33 28 M27 21 H24" />
+      <path class="icon-line" d="M28.5 21 H33.5 M28.5 24.5 H33.5" />
+    </symbol>
+    <!-- 03 sumikae: two houses with transfer arrow -->
+    <symbol id="icon-sumikae" viewBox="0 0 40 40">
+      <path class="icon-line" d="M4 20 L10 15 L16 20 M6 20 V27 H14 V20" />
+      <path class="icon-line" d="M24 20 L30 15 L36 20 M26 20 V27 H34 V20" />
+      <path class="icon-line" d="M15 24 C 19 17, 21 17, 25 24" />
+      <path class="icon-line" d="M23 22 L25.5 24 L22.5 26" />
+    </symbol>
+    <!-- 04 insights: newspaper / analysis -->
+    <symbol id="icon-insights" viewBox="0 0 40 40">
+      <path class="icon-line insights" d="M6 9 H29 V31 H6 Z" />
+      <path class="icon-line insights" d="M10 14 H25 M10 18 H25" />
+      <path class="icon-line insights" d="M10 24 L15 20 L18 23 L25 16" />
+      <path class="icon-line insights" d="M29 12 H34 V31 H10" />
+    </symbol>
+
+    <!-- real brand marks, used in the linkage diagram and app cards -->
+    <!-- 01: loan-simulator app icon — red-to-purple gradient diamond on a light chip -->
+    <symbol id="icon-loan-real" viewBox="0 0 40 40">
+      <rect x="1" y="1" width="38" height="38" rx="9" fill="#D8DCDE"/>
+      <polygon points="20,20 20,3 35,20" fill="#E8848C"/>
+      <polygon points="20,20 35,20 20,37" fill="#C8355F"/>
+      <polygon points="20,20 20,37 5,20" fill="#6B3568"/>
+      <polygon points="20,20 5,20 20,3" fill="#3D2647"/>
+    </symbol>
+    <!-- 02: mansionbaikyaku header diamond, exact brand colors, on a light chip -->
+    <symbol id="icon-sale-real" viewBox="0 0 40 40">
+      <rect x="1" y="1" width="38" height="38" rx="9" fill="#D8DCDE"/>
+      <polygon points="20,20 20,3 35,20" fill="#8FB8E0"/>
+      <polygon points="20,20 35,20 20,37" fill="#1E5FA8"/>
+      <polygon points="20,20 20,37 5,20" fill="#14315C"/>
+      <polygon points="20,20 5,20 20,3" fill="#072544"/>
+    </symbol>
+    <!-- 03: sumikae-NAVI header WBS-bars mark, exact brand colors, on a white chip -->
+    <symbol id="icon-sumikae-real" viewBox="0 0 40 40">
+      <rect x="1" y="1" width="38" height="38" rx="9" fill="#FFFFFF"/>
+      <g transform="translate(7,10) scale(1.4)">
+        <rect x="0" y="1" width="11" height="3.4" rx="1" fill="#0E7A5F"/>
+        <rect x="4" y="6.3" width="14" height="3.4" rx="1" fill="#2757A8"/>
+        <rect x="2" y="11.6" width="9" height="3.4" rx="1" fill="#B97A16"/>
+      </g>
+    </symbol>
+    <!-- 04: Insights globe mark, on a white chip -->
+    <symbol id="icon-insights-real" viewBox="0 0 40 40">
+      <rect x="1" y="1" width="38" height="38" rx="9" fill="#FFFFFF"/>
+      <image href="img/insights-icon.png" x="5" y="5.5" width="30" height="29" preserveAspectRatio="xMidYMid meet"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="hero-bg-wrap">
+  <div class="hero-parallax">
+    <img class="hero-bg" src="img/tokyo-night.jpg" alt="東京の夜景">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-bokeh">
+    <div class="bokeh-dot" style="width:70px; height:70px; left:22%; top:58%;"></div>
+    <div class="bokeh-dot" style="width:46px; height:46px; left:38%; top:70%;"></div>
+    <div class="bokeh-dot" style="width:90px; height:90px; left:65%; top:40%;"></div>
+    <div class="bokeh-dot" style="width:55px; height:55px; left:80%; top:62%;"></div>
+  </div>
+  <div class="hero-scan"></div>
+
+  <header>
+    <div class="logo-mark">
+      住まいの賢い管理・計画
+    </div>
+    <nav>
+      <a href="https://x.com/kirinsan4567" target="_blank" rel="noopener">X: @kirinsan4567</a>
+    </nav>
+  </header>
+
+  <div class="hero-content">
+    <h1>返済する。売る。<br>住み替える。</h1>
+    <p class="lede">住まいに関する管理・計画や重要な意思決定を、4つのアプリによって支援します。</p>
+  </div>
+</div>
+
+<div class="grid-bg" style="position:relative; z-index:2;">
+
+<div class="diagram-wrap">
+  <section class="lifecycle" aria-label="住まいのライフサイクル">
+    <p class="grid-heading">4つのアプリの機能・関係性</p>
+    <div class="lifecycle-panel">
+      <div class="lifecycle-road">
+        <a href="#app-01" class="stop stop-1">
+          <span class="stop-bignum">01</span>
+          <span class="stop-q">今の住まいの変動金利、<br>このままで大丈夫？</span>
+          <span class="stop-icon-row">
+            <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-loan-real" /></svg></span>
+            <span class="stop-appname">住宅ローン返済<br>シミュレーター</span>
+          </span>
+          <span class="stop-label">返済影響を確認する</span>
+        </a>
+        <span class="road-chevron shine-chevron" aria-hidden="true">›</span>
+        <a href="#app-02" class="stop stop-2">
+          <span class="stop-bignum">02</span>
+          <span class="stop-q">売ったら、いくら手元に残る？</span>
+          <span class="stop-icon-row">
+            <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-sale-real" /></svg></span>
+            <span class="stop-appname">不動産売却益計算<br>シミュレーター</span>
+          </span>
+          <span class="stop-label">売却益を試算する</span>
+        </a>
+        <span class="road-chevron shine-chevron" aria-hidden="true">›</span>
+        <a href="#app-03" class="stop stop-3">
+          <span class="stop-bignum">03</span>
+          <span class="stop-q">次の住まいへの<br>資金繰り・予定、無理ない？</span>
+          <span class="stop-icon-row">
+            <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-sumikae-real" /></svg></span>
+            <span class="stop-appname">すみかえNAVI</span>
+          </span>
+          <span class="stop-label">住み替え計画を立てる・確認する</span>
+        </a>
+      </div>
+
+      <div class="lifecycle-updrafts" aria-hidden="true">
+        <span class="up-chevron-wrap"><span class="shine-chevron up-chevron">›</span></span>
+        <span class="up-chevron-wrap"><span class="shine-chevron up-chevron">›</span></span>
+        <span class="up-chevron-wrap"><span class="shine-chevron up-chevron">›</span></span>
+      </div>
+
+      <a href="#app-04" class="stop sky-label">
+        <span class="stop-bignum">04</span>
+        <span class="stop-q">住まいに関する動向はどうなっている？</span>
+        <span class="stop-icon-row">
+          <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-insights-real" /></svg></span>
+          <span class="stop-appname">Insights</span>
+        </span>
+        <span class="stop-label">不動産業界・金利動向を把握する</span>
+      </a>
+    </div>
+  </section>
+</div>
+
+<div class="grid-wrap">
+  <p class="grid-heading">アプリの概要・リンク</p>
+  <div class="grid">
+
+    <!-- 01 loan simulator -->
+    <div class="card ticked" id="app-01">
+      <span class="tick-br"></span><span class="tick-bl"></span>
+      <div class="card-top tint-loan">
+        <span class="card-bignum">01</span>
+        <div class="card-head">
+          <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-loan-real" /></svg></span>
+          <h2>住宅ローン返済シミュレーター</h2>
+        </div>
+        <p class="desc">金利変動シナリオ、繰上返済、住宅ローン控除まで踏み込んで試算。将来の返済額をシナリオ別に比較できます。</p>
+      </div>
+      <div class="card-divider"></div>
+      <div class="shot-wrap">
+        <div class="shot-frame">
+          <div class="shot-chrome"><span></span><span></span><span></span></div>
+          <img src="img/shot-loan.png" alt="住宅ローン返済シミュレーターの返済額推移グラフ" loading="lazy">
+        </div>
+      </div>
+      <div class="card-body">
+        <a class="card-cta" href="https://kirinsan4567.github.io/loan-simulator/" target="_blank" rel="noopener">
+          アプリを開く <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 02 sale profit simulator -->
+    <div class="card ticked" id="app-02">
+      <span class="tick-br"></span><span class="tick-bl"></span>
+      <div class="card-top tint-sale">
+        <span class="card-bignum">02</span>
+        <div class="card-head">
+          <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-sale-real" /></svg></span>
+          <h2>不動産売却益計算シミュレーター</h2>
+        </div>
+        <p class="desc">譲渡所得税、減価償却、3,000万円特別控除まで対応。マンション・戸建ての売却損益を正確に算出します。</p>
+      </div>
+      <div class="card-divider"></div>
+      <div class="shot-wrap">
+        <div class="shot-frame">
+          <div class="shot-chrome"><span></span><span></span><span></span></div>
+          <img src="img/shot-sale.png" alt="売却益推定チャート" loading="lazy">
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="link-note">→ 03すみかえNAVIへデータを引き継ぎ可能</p>
+        <a class="card-cta paid-cta" href="#" target="_blank" rel="noopener">
+          noteで詳細を見る <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 03 sumikae navi -->
+    <div class="card ticked" id="app-03">
+      <span class="tick-br"></span><span class="tick-bl"></span>
+      <div class="card-top tint-sumikae">
+        <span class="card-bignum">03</span>
+        <div class="card-head">
+          <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-sumikae-real" /></svg></span>
+          <h2>すみかえNAVI</h2>
+        </div>
+        <p class="desc">売却と購入を同時に進める「住み替え」特有のスケジュールと資金繰りを可視化。01・02の結果を取り込み、資金ショートのリスクを事前に発見します。</p>
+      </div>
+      <div class="card-divider"></div>
+      <div class="shot-wrap">
+        <div class="shot-frame">
+          <div class="shot-chrome"><span></span><span></span><span></span></div>
+          <img src="img/shot-sumikae.png" alt="すみかえNAVIのスケジュール工程表" loading="lazy">
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="link-note">← 01・02のデータを統合</p>
+        <a class="card-cta paid-cta" href="#" target="_blank" rel="noopener">
+          noteで詳細を見る <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 04 insights -->
+    <div class="card ticked" id="app-04">
+      <span class="tick-br"></span><span class="tick-bl"></span>
+      <div class="card-top tint-insights">
+        <span class="card-bignum">04</span>
+        <div class="card-head">
+          <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-insights-real" /></svg></span>
+          <h2>Insights</h2>
+        </div>
+        <p class="desc">不動産の市況ニュースだけでなく、分析レポートやコラムまで毎日自動で集約。全アプリを使う人に共通する「今の市場」を届けます。</p>
+      </div>
+      <div class="card-divider"></div>
+      <div class="shot-wrap shot-pair">
+        <div class="shot-frame">
+          <div class="shot-chrome"><span></span><span></span><span></span></div>
+          <img src="img/shot-insights-1.png" alt="金利の推移マーケットチャート" loading="lazy">
+        </div>
+        <div class="shot-frame">
+          <div class="shot-chrome"><span></span><span></span><span></span></div>
+          <img src="img/shot-insights-2.png" alt="不動産ニュース一覧とカレンダー" loading="lazy">
+        </div>
+      </div>
+      <div class="card-body">
+        <a class="card-cta" href="https://kirinsan4567.github.io/insights/" target="_blank" rel="noopener">
+          アプリを開く <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="faq-wrap">
+  <p class="grid-heading">FAQ（よくある質問）</p>
+  <div class="lifecycle-panel faq-panel">
+
+    <div class="faq-item">
+      <p class="faq-q"><span class="q-mark">Q.</span>このサイトは何ですか？</p>
+      <p class="faq-a">住宅ローンの返済、売却益の試算、住み替えの資金計画など、住まいに関する意思決定を数字で支えるアプリをまとめたポータルサイトです。個人開発者「KIRIN」が制作・運営しています。</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q"><span class="q-mark">Q.</span>KIRINとは何者ですか？</p>
+      <p class="faq-a">KIRINは、不動産・住宅ローン分野の情報発信やシミュレーターを開発している個人のクリエイターです。不動産や街づくり、建築、アート、データ分析を好みとしています。</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q"><span class="q-mark">Q.</span>このアプリは安全ですか？入力した情報はどこかに送られますか？</p>
+      <p class="faq-a">各シミュレーターは、入力いただいた情報をお使いのブラウザ内で計算する設計を基本としており、外部のサーバーに送信・保存することはありません。なお、サイトの改善のためGoogle Analyticsを利用しており、閲覧ページや滞在時間などの匿名化されたアクセス情報のみを取得しています。入力していただいた金額やご家庭の情報がGoogle Analyticsに送られることはありません。詳しくは<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleのプライバシーポリシー</a>をご確認ください。</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q"><span class="q-mark">Q.</span>料金はかかりますか？</p>
+      <p class="faq-a">住宅ローン返済シミュレーターとInsightsは無料でご利用いただけます。不動産売却益計算シミュレーターとすみかえNAVIは有料で、note.comでご購入いただくとアプリへのリンクとパスコードが発行されます。</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q"><span class="q-mark">Q.</span>計算結果はそのまま信じてよいですか？</p>
+      <p class="faq-a">各アプリの結果は一般的な計算ロジックに基づく「試算」です。実際の金利・税額・審査条件等は金融機関や税理士等の専門家にご確認のうえ、ご自身の判断でご利用ください。</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q"><span class="q-mark">Q.</span>不具合の報告や質問をしたい場合は？</p>
+      <p class="faq-a">画面右上のXアカウント（<a href="https://x.com/kirinsan4567" target="_blank" rel="noopener">@kirinsan4567</a>）のDMにて受け付けています。アプリの不具合報告、使い方のご質問など、お気軽にご連絡ください。</p>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="foot-copyright">
+    <img src="img/giraffe-icon.jpg" alt="KIRIN" class="foot-giraffe">
+    <span>© 2026 KIRIN</span>
+    <a href="https://x.com/kirinsan4567" target="_blank" rel="noopener" class="foot-x-link">
+      <svg class="x-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4 L20 20 M20 4 L4 20" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      @kirinsan4567
+    </a>
+  </div>
+</footer>
+
+</div><!-- /grid-bg -->
+
+<script>
+  // subtle scroll parallax on the hero photo, disabled for reduced-motion users
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const heroParallax = document.querySelector('.hero-parallax');
+    const heroWrap = document.querySelector('.hero-bg-wrap');
+
+    window.addEventListener('scroll', () => {
+      const rect = heroWrap.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      const scrollOffset = window.scrollY * 0.15;
+      heroParallax.style.transform = `translateY(${scrollOffset}px)`;
+    }, { passive: true });
+  }
+</script>
+
+</body>
+</html>
