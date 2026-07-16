@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>住まいマネジメント | 住宅ローン・売却益・住み替えのアプリ群</title>
+<title>KIRIN 不動産アプリプラットフォーム | 住まいの賢い管理・計画</title>
 <meta name="description" content="住宅ローン返済シミュレーター、不動産売却益計算、すみかえNAVI、KIRIN Insights。住まいの意思決定を支えるアプリ群へのポータル。">
+<link rel="icon" type="image/jpeg" href="img/giraffe-icon.jpg">
+<link rel="apple-touch-icon" href="img/giraffe-icon.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -139,18 +141,29 @@
     will-change: transform;
   }
   .hero-bg-wrap img.hero-bg {
+    position: absolute;
+    inset: 0;
     width: 160%;
     height: 100%;
     object-fit: cover;
     object-position: 20% 68%;
-    will-change: transform;
+    will-change: transform, opacity;
   }
+  .hero-bg-wrap img.hero-bg.hero-bg-1 { object-position: 20% 68%; }
+  .hero-bg-wrap img.hero-bg.hero-bg-2 { object-position: 30% 60%; }
   @media (prefers-reduced-motion: no-preference) {
-    .hero-bg-wrap img.hero-bg { animation: panright 48s linear infinite; }
+    .hero-bg-wrap img.hero-bg { animation: hero-cycle 100s linear infinite; }
+    .hero-bg-wrap img.hero-bg.hero-bg-2 { animation-delay: -50s; }
   }
-  @keyframes panright {
-    0%   { transform: translateX(0%); }
-    100% { transform: translateX(-38%); }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-bg-wrap img.hero-bg.hero-bg-2 { opacity: 0; }
+  }
+  @keyframes hero-cycle {
+    0%   { opacity: 1; transform: translateX(0%); }
+    46%  { opacity: 1; transform: translateX(-38%); }
+    50%  { opacity: 0; transform: translateX(-38%); }
+    96%  { opacity: 0; transform: translateX(0%); }
+    100% { opacity: 1; transform: translateX(0%); }
   }
   .hero-bokeh {
     position: absolute;
@@ -684,7 +697,8 @@
 
 <div class="hero-bg-wrap">
   <div class="hero-parallax">
-    <img class="hero-bg" src="img/tokyo-night.jpg" alt="東京の夜景">
+    <img class="hero-bg hero-bg-1" src="img/tokyo-night.jpg" alt="東京の夜景">
+    <img class="hero-bg hero-bg-2" src="img/tokyo-skyline-with-tokyo-tower-rainbow-bridge.jpg" alt="東京タワーとレインボーブリッジのスカイライン">
   </div>
   <div class="hero-overlay"></div>
   <div class="hero-bokeh">
@@ -714,7 +728,7 @@
 
 <div class="diagram-wrap">
   <section class="lifecycle" aria-label="住まいのライフサイクル">
-    <p class="grid-heading">4つのアプリの機能・関係性</p>
+    <p class="grid-heading">アプリの用途・関係性</p>
     <div class="lifecycle-panel">
       <div class="lifecycle-road">
         <a href="#app-01" class="stop stop-1">
@@ -815,7 +829,7 @@
         </div>
       </div>
       <div class="card-body">
-        <p class="link-note">→ 03すみかえNAVIへデータを引き継ぎ可能</p>
+        <p class="link-note">住宅ローン返済シミュレーターとのデータ連携機能搭載</p>
         <a class="card-cta paid-cta" href="#" target="_blank" rel="noopener">
           noteで詳細を見る <span class="arrow">→</span>
         </a>
@@ -831,7 +845,7 @@
           <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-sumikae-real" /></svg></span>
           <h2>すみかえNAVI</h2>
         </div>
-        <p class="desc">売却と購入を同時に進める「住み替え」特有のスケジュールと資金繰りを可視化。01・02の結果を取り込み、資金ショートのリスクを事前に発見します。</p>
+        <p class="desc">売却と購入を同時に進める「住み替え」特有のスケジュールと資金繰りを可視化し、リスクを事前に把握。返済・売却シミュレーションデータを連携可能*。</p>
       </div>
       <div class="card-divider"></div>
       <div class="shot-wrap">
@@ -841,7 +855,7 @@
         </div>
       </div>
       <div class="card-body">
-        <p class="link-note">← 01・02のデータを統合</p>
+        <p class="link-note">*住宅ローン返済シミュレーター、不動産売却計算シミュレーターとのデータ連携機能搭載</p>
         <a class="card-cta paid-cta" href="#" target="_blank" rel="noopener">
           noteで詳細を見る <span class="arrow">→</span>
         </a>
@@ -857,7 +871,7 @@
           <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-insights-real" /></svg></span>
           <h2>Insights</h2>
         </div>
-        <p class="desc">不動産の市況ニュースだけでなく、分析レポートやコラムまで毎日自動で集約。全アプリを使う人に共通する「今の市場」を届けます。</p>
+        <p class="desc">住宅ローン、不動産、プレスリリース等のニュースを毎日自動で集約。その他、独自の分析レポートやコラムも掲載。</p>
       </div>
       <div class="card-divider"></div>
       <div class="shot-wrap shot-pair">
