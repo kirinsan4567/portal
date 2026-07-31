@@ -503,28 +503,20 @@
   }
   .shot-wrap .shot-frame { width: 70%; }
   .shot-wrap.shot-pair {
-    position: relative;
-    height: 220px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
     padding: 20px 24px 6px;
-    display: block;
   }
   .shot-wrap.shot-pair .shot-frame {
-    position: absolute;
-    width: 58%;
-  }
-  .shot-wrap.shot-pair .shot-frame:nth-child(1) {
-    left: 24px; top: 20px;
-    transform: rotate(-3deg);
-    z-index: 1;
-  }
-  .shot-wrap.shot-pair .shot-frame:nth-child(2) {
-    left: 34%; top: 90px;
-    transform: rotate(3deg);
-    z-index: 2;
-    box-shadow: -8px 12px 26px -8px rgba(0,0,0,0.65);
+    width: 50%;
   }
   @media (max-width: 520px) {
-    .shot-wrap.shot-pair { height: 260px; }
+    .shot-wrap.shot-pair {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .shot-wrap.shot-pair .shot-frame { width: 100%; }
   }
 
   .card-body {
@@ -822,10 +814,14 @@
         <p class="desc">譲渡所得税、減価償却、3,000万円特別控除まで対応。マンション・戸建ての売却損益を正確に算出します。</p>
       </div>
       <div class="card-divider"></div>
-      <div class="shot-wrap">
+      <div class="shot-wrap shot-pair">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <img src="img/shot-sale.png" alt="売却益推定チャート" loading="lazy">
+          <img src="img/shot-sale-1.png" alt="自己資本・手取り額の推移チャート" loading="lazy">
+        </div>
+        <div class="shot-frame">
+          <div class="shot-chrome"><span></span><span></span><span></span></div>
+          <img src="img/shot-sale-2.png" alt="時価評価バランスシート図" loading="lazy">
         </div>
       </div>
       <div class="card-body">
