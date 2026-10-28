@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta name="google-site-verification" content="1Us2Q0fdFGorML9t6-KvhCt8cRH0-MVRk5zbIs2RKVk" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KIRIN 不動産アプリプラットフォーム | 住まいの賢い管理・計画</title>
-<meta name="description" content="住宅ローン返済シミュレーター、不動産売却益計算、すみかえNAVI、KIRIN Insights。住まいの意思決定を支えるアプリ群へのポータル。">
+<meta name="description" content="住宅ローン返済シミュレーター、不動産売却益計算、すみかえNAVI、KIRIN Insights、東京マンション管理費・修繕費マップ。住まいの意思決定を支えるアプリ群へのポータル。">
 <link rel="icon" type="image/jpeg" href="img/giraffe-icon.jpg">
 <link rel="apple-touch-icon" href="img/giraffe-icon.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -68,6 +67,7 @@
   .icon-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
   .ticked { position: relative; }
+  #lifecycle, #faq { scroll-margin-top: 92px; }
   .ticked::before, .ticked::after,
   .ticked .tick-br, .ticked .tick-bl {
     content: "";
@@ -89,7 +89,7 @@
     z-index: 5;
     max-width: 1160px;
     margin: 0 auto;
-    padding: 34px 28px 0;
+    padding: 24px 28px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -97,6 +97,8 @@
     flex-wrap: wrap;
   }
   .logo-mark {
+    min-height: 50px;
+    padding-left: 136px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -105,6 +107,15 @@
     font-size: 19px;
     letter-spacing: 0.06em;
     color: #fff;
+  }
+  @media (max-width: 600px) {
+    .logo-mark { font-size: 16px; padding-left: 120px; }
+    header nav { display: none; }
+  }
+  @media (max-width: 360px) {
+    body .menu-btn { gap: 8px; padding: 0 12px 0 11px; font-size: 13px; }
+    .logo-mark { font-size: 14px; padding-left: 108px; }
+    h1 { font-size: 31px; }
   }
   .logo-mark .stamp {
     font-family: var(--font-jp);
@@ -125,6 +136,107 @@
     transition: opacity 0.2s, border-color 0.2s;
   }
   header nav a:hover { opacity: 1; border-color: var(--cyan-line); }
+
+  /* ---------- app menu (fixed button + drawer) ---------- */
+  .menu-btn {
+    position: fixed;
+    z-index: 60;
+    top: 24px;
+    left: max(16px, calc((100vw - 1160px) / 2 + 28px));
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 50px;
+    padding: 0 18px 0 14px;
+    border: 1.5px solid #fff;
+    border-radius: 10px;
+    background: rgba(12,33,56,0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-family: var(--font-num);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .menu-btn:hover { background: rgba(18,49,79,0.9); }
+  .menu-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  body.scrolled .menu-btn { background: rgba(12,33,56,0.92); box-shadow: 0 8px 24px -8px rgba(0,0,0,0.6); }
+  .menu-bars { position: relative; width: 24px; height: 18px; }
+  .menu-bars span {
+    position: absolute; left: 0; width: 100%; height: 2.5px;
+    border-radius: 2px; background: #fff;
+    transition: transform 0.25s, opacity 0.2s, top 0.25s;
+  }
+  .menu-bars span:nth-child(1) { top: 0; }
+  .menu-bars span:nth-child(2) { top: 7.75px; }
+  .menu-bars span:nth-child(3) { top: 15.5px; }
+  body.menu-open .menu-bars span:nth-child(1) { top: 7.75px; transform: rotate(45deg); }
+  body.menu-open .menu-bars span:nth-child(2) { opacity: 0; }
+  body.menu-open .menu-bars span:nth-child(3) { top: 7.75px; transform: rotate(-45deg); }
+
+  .menu-backdrop {
+    position: fixed; inset: 0; z-index: 55;
+    background: rgba(5,14,26,0.6);
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.25s, visibility 0.25s;
+  }
+  .menu-drawer {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 58;
+    width: min(360px, 88vw);
+    padding: 96px 20px 28px;
+    overflow-y: auto;
+    background: var(--navy-deep);
+    border-right: 1px solid var(--navy-line);
+    box-shadow: 18px 0 40px -20px rgba(0,0,0,0.7);
+    transform: translateX(-102%);
+    visibility: hidden;
+    transition: transform 0.28s cubic-bezier(0.16,1,0.3,1), visibility 0.28s;
+  }
+  body.menu-open .menu-backdrop { opacity: 1; visibility: visible; }
+  body.menu-open .menu-drawer { transform: none; visibility: visible; }
+  @media (prefers-reduced-motion: reduce) {
+    .menu-drawer, .menu-backdrop, .menu-bars span { transition: none; }
+  }
+  .menu-group-title {
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    color: var(--ink-muted);
+    margin: 0 4px 10px;
+  }
+  .menu-list { list-style: none; margin: 0 0 26px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .menu-list a {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #fff;
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    border: 1px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .menu-list a:hover, .menu-list a:focus-visible { background: var(--navy-panel); border-color: var(--navy-line); outline: none; }
+  .menu-num { font-family: var(--font-num); font-weight: 700; font-size: 13px; color: var(--cyan-line); width: 22px; flex-shrink: 0; }
+  .menu-icon { width: 32px; height: 32px; flex-shrink: 0; }
+  .menu-icon svg { width: 100%; height: 100%; display: block; }
+  .menu-name { flex: 1; }
+  .menu-tag {
+    font-size: 10.5px; letter-spacing: 0.08em;
+    padding: 2px 7px; border-radius: 4px; flex-shrink: 0;
+    border: 1px solid var(--stamp-free); color: var(--stamp-free);
+  }
+  .menu-tag.paid { border-color: var(--stamp-paid); color: var(--stamp-paid); }
+  .menu-list.sub a { font-size: 13.5px; color: var(--ink-paper); }
+  @keyframes jump-flash {
+    0% { box-shadow: 0 0 0 0 rgba(155,232,221,0); }
+    25% { box-shadow: 0 0 0 3px rgba(155,232,221,0.8); }
+    100% { box-shadow: 0 0 0 0 rgba(155,232,221,0); }
+  }
+  .jump-flash { animation: jump-flash 1.4s ease-out; }
 
   /* ---------- hero with photo ---------- */
   .hero-bg-wrap {
@@ -325,10 +437,10 @@
   .stop.stop-2 { border-top-color: #1e5fa8; }
   .stop.stop-3 { border-top-color: var(--gold); }
   .stop-q {
-    font-size: 12.5px;
+    font-size: 14px;
     color: var(--ink-paper);
     line-height: 1.5;
-    height: 44px;
+    height: 46px;
     width: 100%;
     display: flex;
     align-items: flex-start;
@@ -345,24 +457,33 @@
   .stop-appname {
     font-family: var(--font-jp);
     font-weight: 500;
-    font-size: 10.5px;
-    line-height: 1.35;
+    font-size: 12px;
+    line-height: 1.4;
     color: var(--ink-muted);
     text-align: left;
   }
-  .stop-label { font-family: var(--font-jp); font-weight: 700; font-size: 14.5px; color: #fff; }
+  .stop-label { font-family: var(--font-jp); font-weight: 700; font-size: 15.5px; color: #fff; }
 
-  .stop.sky-label {
+  /* 04段：動向・データを見るアプリ。タイルを横に追加していく */
+  .sky-row {
     margin-top: 18px;
     padding-top: 20px;
     border-top: 1px solid rgba(74,134,214,0.3);
-    border-top-width: 1px;
-    background: none;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
   }
-  .stop.sky-label:hover { background: rgba(74,134,214,0.08); }
+  .sky-row-title {
+    font-size: 14px;
+    color: var(--ink-paper);
+    text-align: center;
+    margin: 0 0 14px;
+  }
+  .sky-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .stop.sky-tile .stop-q { height: auto; min-height: 20px; }
+  .stop.stop-insights { border-top-color: #4a86d6; }
+  .stop.stop-kanrihi { border-top-color: #2f9e8f; }
 
   .shine-chevron {
     display: inline-block;
@@ -399,6 +520,7 @@
     .lifecycle-road { flex-direction: column; }
     .road-chevron { transform: rotate(90deg); }
     .lifecycle-updrafts { display: none; }
+    .sky-tiles { grid-template-columns: 1fr; }
   }
 
   /* ---------- cards grid ---------- */
@@ -408,9 +530,10 @@
     padding: 0 28px 80px;
   }
   .grid-heading {
-    font-size: 12px;
-    letter-spacing: 0.18em;
-    color: var(--ink-muted);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: var(--ink-paper);
     margin-bottom: 22px;
   }
   .grid {
@@ -422,6 +545,7 @@
     .grid { grid-template-columns: 1fr; }
   }
   .card {
+    scroll-margin-top: 92px;
     background: var(--navy-panel);
     display: flex;
     flex-direction: column;
@@ -439,6 +563,7 @@
   .card-top.tint-loan { background: radial-gradient(120% 140% at 15% 15%, rgba(168,55,95,0.28), var(--navy-panel) 65%); }
   .card-top.tint-sale { background: radial-gradient(120% 140% at 15% 15%, rgba(30,95,168,0.28), var(--navy-panel) 65%); }
   .card-top.tint-sumikae { background: radial-gradient(120% 140% at 15% 15%, rgba(227,165,74,0.28), var(--navy-panel) 65%); }
+  .card-top.tint-kanrihi { background: radial-gradient(120% 140% at 15% 15%, rgba(47,158,143,0.28), var(--navy-panel) 65%); }
   .card-top.tint-insights { background: radial-gradient(120% 140% at 15% 15%, rgba(74,134,214,0.28), var(--navy-panel) 65%); }
   .card-bignum {
     position: absolute;
@@ -496,28 +621,51 @@
     background: #0f273f;
   }
   .shot-chrome span { width: 6px; height: 6px; border-radius: 50%; background: var(--navy-line); }
-  .shot-frame img { display: block; width: 100%; height: auto; }
+  /* 台紙：全スクショ共通の枠。比率を固定し、画像は中央に収める */
+  .shot-stage {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background:
+      radial-gradient(120% 90% at 50% 0%, rgba(111,214,201,0.10), transparent 60%),
+      linear-gradient(rgba(111,214,201,0.07) 1px, transparent 1px) 0 0 / 16px 16px,
+      linear-gradient(90deg, rgba(111,214,201,0.07) 1px, transparent 1px) 0 0 / 16px 16px,
+      #0b1d31;
+  }
+  .shot-stage img {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    width: auto; height: auto;
+    max-width: calc(100% - 28px);
+    max-height: calc(100% - 28px);
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px rgba(155,232,221,0.18), 0 10px 24px -8px rgba(0,0,0,0.75);
+  }
   .shot-wrap {
+    container-type: inline-size;
     padding: 20px 24px 6px;
     display: flex;
     justify-content: center;
+    gap: 14px;
   }
   .shot-wrap .shot-frame { width: 70%; }
-  .shot-wrap.shot-pair {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 20px 24px 6px;
-  }
-  .shot-wrap.shot-pair .shot-frame {
-    width: 50%;
+  /* 2枚並びも1枚のときと同じ高さになる比率 */
+  .shot-wrap.shot-pair .shot-frame { width: 50%; }
+  .shot-wrap.shot-pair .shot-stage { aspect-ratio: 10 / 9; }
+  /* 1枚・2枚に関わらず、台紙の高さを「1枚表示の幅×10/16」で全カード共通にする */
+  @supports (height: 1cqw) {
+    .shot-wrap .shot-stage,
+    .shot-wrap.shot-pair .shot-stage { aspect-ratio: auto; height: calc(70cqw * 10 / 16); }
   }
   @media (max-width: 520px) {
-    .shot-wrap.shot-pair {
-      flex-direction: column;
-      align-items: stretch;
+    .shot-wrap, .shot-wrap.shot-pair { flex-direction: column; align-items: stretch; }
+    .shot-wrap .shot-frame, .shot-wrap.shot-pair .shot-frame { width: 100%; }
+    .shot-wrap.shot-pair .shot-stage { aspect-ratio: 16 / 10; }
+    @supports (height: 1cqw) {
+      .shot-wrap .shot-stage,
+      .shot-wrap.shot-pair .shot-stage { aspect-ratio: auto; height: calc(100cqw * 10 / 16); }
     }
-    .shot-wrap.shot-pair .shot-frame { width: 100%; }
   }
 
   .card-body {
@@ -685,8 +833,34 @@
       <rect x="1" y="1" width="38" height="38" rx="9" fill="#FFFFFF"/>
       <image href="img/insights-icon.png" x="5" y="5.5" width="30" height="29" preserveAspectRatio="xMidYMid meet"/>
     </symbol>
+    <!-- 05: 管理費マップ — map grid with pins, on a white chip -->
+    <symbol id="icon-kanrihi-real" viewBox="0 0 40 40">
+      <rect x="1" y="1" width="38" height="38" rx="9" fill="#FFFFFF"/>
+      <path d="M7 11 L15 8 L25 11 L33 8 V29 L25 32 L15 29 L7 32 Z" fill="#DDF1EC" stroke="#1F7F72" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M15 8 V29 M25 11 V32" stroke="#1F7F72" stroke-width="1.2" opacity="0.55"/>
+      <circle cx="12" cy="20" r="2.4" fill="#2F9E8F"/>
+      <circle cx="20" cy="15.5" r="2.4" fill="#E3A54A"/>
+      <circle cx="28.5" cy="22" r="2.4" fill="#C8355F"/>
+    </symbol>
   </defs>
 </svg>
+
+<!-- アプリメニュー：中身は下の「アプリの概要・リンク」のカードから自動生成 -->
+<button class="menu-btn" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="app-menu">
+  <span class="menu-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+  MENU
+</button>
+<div class="menu-backdrop" aria-hidden="true"></div>
+<nav class="menu-drawer" id="app-menu" aria-label="アプリメニュー">
+  <p class="menu-group-title">アプリ一覧</p>
+  <ul class="menu-list" id="menu-apps"></ul>
+  <p class="menu-group-title">このサイトについて</p>
+  <ul class="menu-list sub">
+    <li><a href="#lifecycle">アプリの用途・関係性</a></li>
+    <li><a href="#faq">FAQ（よくある質問）</a></li>
+    <li><a href="https://x.com/kirinsan4567" target="_blank" rel="noopener">X: @kirinsan4567</a></li>
+  </ul>
+</nav>
 
 <div class="hero-bg-wrap">
   <div class="hero-parallax">
@@ -713,14 +887,14 @@
 
   <div class="hero-content">
     <h1>返済する。売る。<br>住み替える。</h1>
-    <p class="lede">住まいに関する管理・計画や重要な意思決定を、4つのアプリによって支援します。</p>
+    <p class="lede">住まいに関する管理・計画や重要な意思決定を、アプリによって支援します。</p>
   </div>
 </div>
 
 <div class="grid-bg" style="position:relative; z-index:2;">
 
 <div class="diagram-wrap">
-  <section class="lifecycle" aria-label="住まいのライフサイクル">
+  <section class="lifecycle" id="lifecycle" aria-label="住まいのライフサイクル">
     <p class="grid-heading">アプリの用途・関係性</p>
     <div class="lifecycle-panel">
       <div class="lifecycle-road">
@@ -761,15 +935,30 @@
         <span class="up-chevron-wrap"><span class="shine-chevron up-chevron">›</span></span>
       </div>
 
-      <a href="#app-04" class="stop sky-label">
-        <span class="stop-bignum">04</span>
-        <span class="stop-q">住まいに関する動向はどうなっている？</span>
-        <span class="stop-icon-row">
-          <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-insights-real" /></svg></span>
-          <span class="stop-appname">Insights</span>
-        </span>
-        <span class="stop-label">不動産業界・金利動向を把握する</span>
-      </a>
+      <div class="sky-row">
+        <p class="sky-row-title">住まいに関する動向はどうなっている？</p>
+        <!-- 新しいアプリはこの中に .stop.sky-tile を1つ追加するだけで横に並ぶ -->
+        <div class="sky-tiles">
+          <a href="#app-04" class="stop sky-tile stop-insights">
+            <span class="stop-bignum">04</span>
+            <span class="stop-q">業界ニュース・金利は今どう動いている？</span>
+            <span class="stop-icon-row">
+              <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-insights-real" /></svg></span>
+              <span class="stop-appname">Insights</span>
+            </span>
+            <span class="stop-label">不動産業界・金利動向を把握する</span>
+          </a>
+          <a href="#app-05" class="stop sky-tile stop-kanrihi">
+            <span class="stop-bignum">05</span>
+            <span class="stop-q">あのマンションの管理費・修繕費は高い？</span>
+            <span class="stop-icon-row">
+              <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-kanrihi-real" /></svg></span>
+              <span class="stop-appname">東京マンション<br>管理費・修繕費マップ</span>
+            </span>
+            <span class="stop-label">管理費・修繕費の相場を比較する</span>
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -793,7 +982,7 @@
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <img src="img/shot-loan.png" alt="住宅ローン返済シミュレーターの返済額推移グラフ" loading="lazy">
+          <div class="shot-stage"><img src="img/shot-loan.png" alt="住宅ローン返済シミュレーターの返済額推移グラフ" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
@@ -818,11 +1007,11 @@
       <div class="shot-wrap shot-pair">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <img src="img/shot-sale-1.png" alt="自己資本・手取り額の推移チャート" loading="lazy">
+          <div class="shot-stage"><img src="img/shot-sale-1.png" alt="自己資本・手取り額の推移チャート" loading="lazy"></div>
         </div>
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <img src="img/shot-sale-2.png" alt="時価評価バランスシート図" loading="lazy">
+          <div class="shot-stage"><img src="img/shot-sale-2.png" alt="時価評価バランスシート図" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
@@ -848,7 +1037,7 @@
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <img src="img/shot-sumikae.png" alt="すみかえNAVIのスケジュール工程表" loading="lazy">
+          <div class="shot-stage"><img src="img/shot-sumikae.png" alt="すみかえNAVIのスケジュール工程表" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
@@ -874,11 +1063,11 @@
       <div class="shot-wrap shot-pair">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <img src="img/shot-insights-1.png" alt="金利の推移マーケットチャート" loading="lazy">
+          <div class="shot-stage"><img src="img/shot-insights-1.png" alt="金利の推移マーケットチャート" loading="lazy"></div>
         </div>
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <img src="img/shot-insights-2.png" alt="不動産ニュース一覧とカレンダー" loading="lazy">
+          <div class="shot-stage"><img src="img/shot-insights-2.png" alt="不動産ニュース一覧とカレンダー" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
@@ -888,10 +1077,35 @@
       </div>
     </div>
 
+    <!-- 05 kanrihi map -->
+    <div class="card ticked" id="app-05">
+      <span class="tick-br"></span><span class="tick-bl"></span>
+      <div class="card-top tint-kanrihi">
+        <span class="card-bignum">05</span>
+        <div class="card-head">
+          <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-kanrihi-real" /></svg></span>
+          <h2>東京マンション管理費・修繕費マップ</h2>
+        </div>
+        <p class="desc">東京23区を中心としたマンションの管理費・修繕積立金を、実際の売出事例をもとに地図と散布図で比較。エリア・築年数・階数・総戸数で絞り込めます。</p>
+      </div>
+      <div class="card-divider"></div>
+      <div class="shot-wrap">
+        <div class="shot-frame">
+          <div class="shot-chrome"><span></span><span></span><span></span></div>
+          <div class="shot-stage"><img src="img/shot-kanrihi.png" alt="東京マンション管理費・修繕費マップの地図と散布図" loading="lazy"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <a class="card-cta" href="https://kirinsan4567.github.io/kanrihi/" target="_blank" rel="noopener">
+          アプリを開く <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<div class="faq-wrap">
+<div class="faq-wrap" id="faq">
   <p class="grid-heading">FAQ（よくある質問）</p>
   <div class="lifecycle-panel faq-panel">
 
@@ -912,7 +1126,7 @@
 
     <div class="faq-item">
       <p class="faq-q"><span class="q-mark">Q.</span>料金はかかりますか？</p>
-      <p class="faq-a">住宅ローン返済シミュレーターとInsightsは無料でご利用いただけます。不動産売却益計算シミュレーターとすみかえNAVIは有料で、note.comでご購入いただくとアプリへのリンクとパスコードが発行されます。</p>
+      <p class="faq-a">住宅ローン返済シミュレーター、Insights、東京マンション管理費・修繕費マップは無料でご利用いただけます。不動産売却益計算シミュレーターとすみかえNAVIは有料で、note.comでご購入いただくとアプリへのリンクとパスコードが発行されます。</p>
     </div>
 
     <div class="faq-item">
@@ -954,6 +1168,66 @@
       heroParallax.style.transform = `translateY(${scrollOffset}px)`;
     }, { passive: true });
   }
+
+  // ---------- app menu ----------
+  (function () {
+    const body = document.body;
+    const btn = document.querySelector('.menu-btn');
+    const drawer = document.getElementById('app-menu');
+    const backdrop = document.querySelector('.menu-backdrop');
+    const list = document.getElementById('menu-apps');
+    const cards = document.querySelectorAll('.grid .card[id]');
+
+    // カードからメニュー項目を自動生成（カードを足せばメニューにも出る）
+    cards.forEach(card => {
+      const num = card.querySelector('.card-bignum')?.textContent.trim() || '';
+      const name = card.querySelector('h2')?.textContent.trim() || '';
+      const icon = card.querySelector('.head-icon use')?.getAttribute('href') || '';
+      const paid = !!card.querySelector('.paid-cta');
+      const li = document.createElement('li');
+      li.innerHTML =
+        '<a href="#' + card.id + '">' +
+          '<span class="menu-num">' + num + '</span>' +
+          '<span class="menu-icon"><svg viewBox="0 0 40 40"><use href="' + icon + '" /></svg></span>' +
+          '<span class="menu-name"></span>' +
+          '<span class="menu-tag' + (paid ? ' paid' : '') + '">' + (paid ? '有料' : '無料') + '</span>' +
+        '</a>';
+      li.querySelector('.menu-name').textContent = name;
+      list.appendChild(li);
+    });
+
+    function setOpen(open) {
+      body.classList.toggle('menu-open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+      if (open) drawer.querySelector('a')?.focus();
+    }
+    btn.addEventListener('click', () => setOpen(!body.classList.contains('menu-open')));
+    backdrop.addEventListener('click', () => setOpen(false));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && body.classList.contains('menu-open')) { setOpen(false); btn.focus(); }
+    });
+
+    // メニューからはスクロールせずジャンプで表示
+    drawer.addEventListener('click', e => {
+      const a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      const target = document.getElementById(a.getAttribute('href').slice(1));
+      if (!target) return;
+      e.preventDefault();
+      setOpen(false);
+      target.scrollIntoView({ behavior: 'instant', block: 'start' });
+      // プレビュー枠（about:srcdoc）ではURL書き換えが禁止されるため失敗しても続行
+      try { history.replaceState(null, '', '#' + target.id); } catch (_) {}
+      target.classList.remove('jump-flash');
+      void target.offsetWidth;
+      target.classList.add('jump-flash');
+    });
+
+    const onScroll = () => body.classList.toggle('scrolled', window.scrollY > 40);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
 </script>
 
 </body>
