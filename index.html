@@ -1,19 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q94YYVKNFG"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-Q94YYVKNFG');
-</script>
-  
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KIRIN 不動産アプリプラットフォーム | 住まいの賢い管理・計画</title>
-<meta name="description" content="住宅ローン返済シミュレーター、不動産売却益計算、すみかえNAVI、KIRIN Insights、東京マンション管理費・修繕費マップ。住まいの意思決定を支えるアプリ群へのポータル。">
+<meta name="description" content="住宅ローン返済シミュレーター、不動産売却益計算、すみかえNAVI、KIRIN Insights、東京マンション管理費・修繕費マップ、生活利便性マップ。住まいの意思決定を支えるアプリ群へのポータル。">
 <link rel="icon" type="image/jpeg" href="img/giraffe-icon.jpg">
 <link rel="apple-touch-icon" href="img/giraffe-icon.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -118,12 +109,12 @@
     color: #fff;
   }
   @media (max-width: 600px) {
-    .logo-mark { font-size: 16px; padding-left: 120px; }
+    .logo-mark { font-size: 16px; padding-left: 120px; padding-right: 74px; line-height: 1.35; word-break: keep-all; }
     header nav { display: none; }
   }
   @media (max-width: 360px) {
     body .menu-btn { gap: 8px; padding: 0 12px 0 11px; font-size: 13px; }
-    .logo-mark { font-size: 14px; padding-left: 108px; }
+    .logo-mark { font-size: 14px; padding-left: 108px; padding-right: 70px; }
     h1 { font-size: 31px; }
   }
   .logo-mark .stamp {
@@ -246,6 +237,45 @@
     100% { box-shadow: 0 0 0 0 rgba(155,232,221,0); }
   }
   .jump-flash { animation: jump-flash 1.4s ease-out; }
+
+  /* ---------- language switch (fixed, top-right) ---------- */
+  .lang-switch {
+    position: fixed;
+    z-index: 60;
+    top: 32px;
+    right: max(16px, calc((100vw - 1160px) / 2 + 28px));
+    display: flex;
+    height: 34px;
+    border: 1.5px solid #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(12,33,56,0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+  body.scrolled .lang-switch { background: rgba(12,33,56,0.92); }
+  .lang-switch button {
+    width: 36px;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-family: var(--font-num);
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    opacity: 0.7;
+  }
+  .lang-switch button[aria-pressed="true"] { background: #fff; color: var(--navy-deep); opacity: 1; }
+  .lang-switch button:focus-visible { outline: 2px solid var(--cyan-bright); outline-offset: -3px; }
+  header nav { margin-right: 96px; }
+  html:not([lang="en"]) .en-only { display: none; }
+  .lang-note {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin: 0;
+  }
+  .hero-content .hero-note { margin-top: 10px; font-size: 13px; color: var(--cyan-bright); }
 
   /* ---------- hero with photo ---------- */
   .hero-bg-wrap {
@@ -487,12 +517,13 @@
   }
   .sky-tiles {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 14px;
   }
-  .stop.sky-tile .stop-q { height: auto; min-height: 20px; }
+  .stop.sky-tile .stop-q { height: 42px; }
   .stop.stop-insights { border-top-color: #4a86d6; }
   .stop.stop-kanrihi { border-top-color: #6e7781; }
+  .stop.stop-seikatsu { border-top-color: #4a90c4; }
 
   .shine-chevron {
     display: inline-block;
@@ -572,6 +603,7 @@
   .card-top.tint-loan { background: radial-gradient(120% 140% at 15% 15%, rgba(168,55,95,0.28), var(--navy-panel) 65%); }
   .card-top.tint-sale { background: radial-gradient(120% 140% at 15% 15%, rgba(30,95,168,0.28), var(--navy-panel) 65%); }
   .card-top.tint-sumikae { background: radial-gradient(120% 140% at 15% 15%, rgba(227,165,74,0.28), var(--navy-panel) 65%); }
+  .card-top.tint-seikatsu { background: radial-gradient(120% 140% at 15% 15%, rgba(74,144,196,0.28), var(--navy-panel) 65%); }
   .card-top.tint-kanrihi { background: radial-gradient(120% 140% at 15% 15%, rgba(110,119,129,0.30), var(--navy-panel) 65%); }
   .card-top.tint-insights { background: radial-gradient(120% 140% at 15% 15%, rgba(74,134,214,0.28), var(--navy-panel) 65%); }
   .card-bignum {
@@ -656,25 +688,27 @@
     padding: 20px 24px 6px;
     display: flex;
     justify-content: center;
-    gap: 14px;
   }
-  .shot-wrap .shot-frame { width: 70%; }
-  /* 2枚並びも1枚のときと同じ高さになる比率 */
-  .shot-wrap.shot-pair .shot-frame { width: 50%; }
-  .shot-wrap.shot-pair .shot-stage { aspect-ratio: 10 / 9; }
-  /* 1枚・2枚に関わらず、台紙の高さを「1枚表示の幅×10/16」で全カード共通にする */
+  .shot-wrap .shot-frame { width: 100%; }
+  /* 全カード共通の台紙の高さ（カード幅に連動） */
+  .shot-wrap .shot-stage { aspect-ratio: auto; height: 300px; }
   @supports (height: 1cqw) {
-    .shot-wrap .shot-stage,
-    .shot-wrap.shot-pair .shot-stage { aspect-ratio: auto; height: calc(70cqw * 10 / 16); }
+    .shot-wrap .shot-stage { height: calc(100cqw * 0.78); }
   }
+  /* スマホは1列なので台紙を正方形にして紹介画像を最大化 */
   @media (max-width: 520px) {
-    .shot-wrap, .shot-wrap.shot-pair { flex-direction: column; align-items: stretch; }
-    .shot-wrap .shot-frame, .shot-wrap.shot-pair .shot-frame { width: 100%; }
-    .shot-wrap.shot-pair .shot-stage { aspect-ratio: 16 / 10; }
-    @supports (height: 1cqw) {
-      .shot-wrap .shot-stage,
-      .shot-wrap.shot-pair .shot-stage { aspect-ratio: auto; height: calc(100cqw * 10 / 16); }
-    }
+    .shot-wrap { padding: 16px 16px 6px; }
+    @supports (height: 1cqw) { .shot-wrap .shot-stage { height: 100cqw; } }
+  }
+  /* 2枚のスクショは台紙の中で上下に積む */
+  .shot-stage.stack {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    gap: 12px; padding: 14px;
+  }
+  .shot-stage.stack img {
+    position: static; transform: none;
+    max-width: 100%; max-height: calc((100% - 12px) / 2);
+    min-height: 0;
   }
 
   .card-body {
@@ -858,6 +892,11 @@
         <rect x="6.5" y="-2.2" width="7" height="4.4" fill="#D8DCDE"/>
       </g>
     </symbol>
+    <!-- 06: 生活利便性マップ -->
+    <symbol id="icon-seikatsu-real" viewBox="0 0 40 40">
+      <rect x="1" y="1" width="38" height="38" rx="9" fill="#FFFFFF"/>
+      <image href="img/icon-seikatsu.png" x="3" y="3" width="34" height="34" preserveAspectRatio="xMidYMid meet"/>
+    </symbol>
   </defs>
 </svg>
 
@@ -866,14 +905,18 @@
   <span class="menu-bars" aria-hidden="true"><span></span><span></span><span></span></span>
   MENU
 </button>
+<div class="lang-switch" role="group" aria-label="Language / 言語">
+  <button type="button" data-lang="ja" lang="ja">JA</button>
+  <button type="button" data-lang="en" lang="en">EN</button>
+</div>
 <div class="menu-backdrop" aria-hidden="true"></div>
 <nav class="menu-drawer" id="app-menu" aria-label="アプリメニュー">
-  <p class="menu-group-title">アプリ一覧</p>
+  <p class="menu-group-title" data-i18n="m-apps">アプリ一覧</p>
   <ul class="menu-list" id="menu-apps"></ul>
-  <p class="menu-group-title">このサイトについて</p>
+  <p class="menu-group-title" data-i18n="m-about">このサイトについて</p>
   <ul class="menu-list sub">
-    <li><a href="#lifecycle">アプリの用途・関係性</a></li>
-    <li><a href="#faq">FAQ（よくある質問）</a></li>
+    <li><a href="#lifecycle" data-i18n="h-life">アプリの用途・関係性</a></li>
+    <li><a href="#faq" data-i18n="h-faq">FAQ（よくある質問）</a></li>
     <li><a href="https://x.com/kirinsan4567" target="_blank" rel="noopener">X: @kirinsan4567</a></li>
   </ul>
 </nav>
@@ -893,17 +936,16 @@
   <div class="hero-scan"></div>
 
   <header>
-    <div class="logo-mark">
-      住まいの賢い管理・計画
-    </div>
+    <div class="logo-mark" data-i18n="logo">住まいの賢い<wbr>管理・計画</div>
     <nav>
-      <a href="https://x.com/kirinsan4567" target="_blank" rel="noopener">X: @kirinsan4567</a>
+      <a class="x-link" href="https://x.com/kirinsan4567" target="_blank" rel="noopener">X: @kirinsan4567</a>
     </nav>
   </header>
 
   <div class="hero-content">
-    <h1>返済する。売る。<br>住み替える。</h1>
-    <p class="lede">住まいに関する管理・計画や重要な意思決定を、アプリによって支援します。</p>
+    <h1 data-i18n="h1">返済する。売る。<br>住み替える。</h1>
+    <p class="lede" data-i18n="lede">住まいに関する管理・計画や重要な意思決定を、アプリによって支援します。</p>
+    <p class="lang-note en-only hero-note">All apps are currently available in Japanese only. English support is under consideration.</p>
   </div>
 </div>
 
@@ -911,37 +953,37 @@
 
 <div class="diagram-wrap">
   <section class="lifecycle" id="lifecycle" aria-label="住まいのライフサイクル">
-    <p class="grid-heading">アプリの用途・関係性</p>
+    <p class="grid-heading" data-i18n="h-life">アプリの用途・関係性</p>
     <div class="lifecycle-panel">
       <div class="lifecycle-road">
         <a href="#app-01" class="stop stop-1">
           <span class="stop-bignum">01</span>
-          <span class="stop-q">今の住まいの変動金利、<br>このままで大丈夫？</span>
+          <span class="stop-q" data-i18n="q1">今の住まいの変動金利、<br>このままで大丈夫？</span>
           <span class="stop-icon-row">
             <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-loan-real" /></svg></span>
-            <span class="stop-appname">住宅ローン返済<br>シミュレーター</span>
+            <span class="stop-appname" data-i18n="a1">住宅ローン返済<br>シミュレーター</span>
           </span>
-          <span class="stop-label">返済影響を確認する</span>
+          <span class="stop-label" data-i18n="l1">返済影響を確認する</span>
         </a>
         <span class="road-chevron shine-chevron" aria-hidden="true">›</span>
         <a href="#app-02" class="stop stop-2">
           <span class="stop-bignum">02</span>
-          <span class="stop-q">売ったら、いくら手元に残る？</span>
+          <span class="stop-q" data-i18n="q2">売ったら、いくら手元に残る？</span>
           <span class="stop-icon-row">
             <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-sale-real" /></svg></span>
-            <span class="stop-appname">不動産売却益計算<br>シミュレーター</span>
+            <span class="stop-appname" data-i18n="a2">不動産売却益計算<br>シミュレーター</span>
           </span>
-          <span class="stop-label">売却益を試算する</span>
+          <span class="stop-label" data-i18n="l2">売却益を試算する</span>
         </a>
         <span class="road-chevron shine-chevron" aria-hidden="true">›</span>
         <a href="#app-03" class="stop stop-3">
           <span class="stop-bignum">03</span>
-          <span class="stop-q">次の住まいへの<br>資金繰り・予定、無理ない？</span>
+          <span class="stop-q" data-i18n="q3">次の住まいへの<br>資金繰り・予定、無理ない？</span>
           <span class="stop-icon-row">
             <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-sumikae-real" /></svg></span>
             <span class="stop-appname">すみかえNAVI</span>
           </span>
-          <span class="stop-label">住み替え計画を立てる・確認する</span>
+          <span class="stop-label" data-i18n="l3">住み替え計画を立てる・確認する</span>
         </a>
       </div>
 
@@ -952,26 +994,35 @@
       </div>
 
       <div class="sky-row">
-        <p class="sky-row-title">住まいに関する動向はどうなっている？</p>
+        <p class="sky-row-title" data-i18n="sky">住まいに関する動向はどうなっている？</p>
         <!-- 新しいアプリはこの中に .stop.sky-tile を1つ追加するだけで横に並ぶ -->
         <div class="sky-tiles">
           <a href="#app-04" class="stop sky-tile stop-insights">
             <span class="stop-bignum">04</span>
-            <span class="stop-q">不動産やローンに関するマーケットは今どうなっている？</span>
+            <span class="stop-q" data-i18n="q4">不動産やローンに関する<br>マーケットは今どうなっている？</span>
             <span class="stop-icon-row">
               <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-insights-real" /></svg></span>
               <span class="stop-appname">Insights</span>
             </span>
-            <span class="stop-label">不動産業界・金利動向を把握する</span>
+            <span class="stop-label" data-i18n="l4">不動産業界・金利動向を把握する</span>
           </a>
           <a href="#app-05" class="stop sky-tile stop-kanrihi">
             <span class="stop-bignum">05</span>
-            <span class="stop-q">あのマンションの管理費・修繕費は高い？</span>
+            <span class="stop-q" data-i18n="q5">あのマンションの<br>管理費・修繕費は高い？</span>
             <span class="stop-icon-row">
               <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-kanrihi-real" /></svg></span>
-              <span class="stop-appname">東京マンション<br>管理費・修繕費マップ</span>
+              <span class="stop-appname" data-i18n="a5">東京マンション<br>管理費・修繕費マップ</span>
             </span>
-            <span class="stop-label">管理費・修繕費の相場を比較する</span>
+            <span class="stop-label" data-i18n="l5">管理費・修繕費の相場を比較する</span>
+          </a>
+          <a href="#app-06" class="stop sky-tile stop-seikatsu">
+            <span class="stop-bignum">06</span>
+            <span class="stop-q" data-i18n="q6">その場所、<br>暮らしやすい？</span>
+            <span class="stop-icon-row">
+              <span class="stop-icon"><svg viewBox="0 0 40 40"><use href="#icon-seikatsu-real" /></svg></span>
+              <span class="stop-appname" data-i18n="a6">生活利便性マップ</span>
+            </span>
+            <span class="stop-label" data-i18n="l6">街の利便性を地図で確認する</span>
           </a>
         </div>
       </div>
@@ -980,92 +1031,91 @@
 </div>
 
 <div class="grid-wrap">
-  <p class="grid-heading">アプリの概要・リンク</p>
+  <p class="grid-heading" data-i18n="h-cards">アプリの概要・リンク</p>
   <div class="grid">
 
     <!-- 01 loan simulator -->
-    <div class="card ticked" id="app-01">
+    <div class="card ticked" id="app-01" data-jp-only>
       <span class="tick-br"></span><span class="tick-bl"></span>
       <div class="card-top tint-loan">
         <span class="card-bignum">01</span>
         <div class="card-head">
           <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-loan-real" /></svg></span>
-          <h2>住宅ローン返済シミュレーター</h2>
+          <h2 data-i18n="n1">住宅ローン返済シミュレーター</h2>
         </div>
-        <p class="desc">金利変動シナリオ、繰上返済、住宅ローン控除まで踏み込んで試算。将来の返済額をシナリオ別に比較できます。</p>
+        <p class="desc" data-i18n="d1">金利変動シナリオ、繰上返済、住宅ローン控除まで踏み込んで試算。将来の返済額をシナリオ別に比較できます。</p>
       </div>
       <div class="card-divider"></div>
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/shot-loan.png" alt="住宅ローン返済シミュレーターの返済額推移グラフ" loading="lazy"></div>
+          <div class="shot-stage"><img src="img/promo-loan.jpg" alt="住宅ローン返済シミュレーターの紹介画像" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
-        <a class="card-cta" href="https://kirinsan4567.github.io/loan-simulator/" target="_blank" rel="noopener">
+        <p class="lang-note en-only">※ Currently available in Japanese only</p>
+        <a class="card-cta" data-i18n="cta-open" href="https://kirinsan4567.github.io/loan-simulator/" target="_blank" rel="noopener">
           アプリを開く <span class="arrow">→</span>
         </a>
       </div>
     </div>
 
     <!-- 02 sale profit simulator -->
-    <div class="card ticked" id="app-02">
+    <div class="card ticked" id="app-02" data-jp-only>
       <span class="tick-br"></span><span class="tick-bl"></span>
       <div class="card-top tint-sale">
         <span class="card-bignum">02</span>
         <div class="card-head">
           <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-sale-real" /></svg></span>
-          <h2>不動産売却益計算シミュレーター</h2>
+          <h2 data-i18n="n2">不動産売却益計算シミュレーター</h2>
         </div>
-        <p class="desc">譲渡所得税、減価償却、3,000万円特別控除まで対応。マンション・戸建ての売却損益を正確に算出します。ペアローン条件にも対応。</p>
+        <p class="desc" data-i18n="d2">譲渡所得税、減価償却、3,000万円特別控除まで対応。マンション・戸建ての売却損益を正確に算出します。ペアローン条件にも対応。</p>
       </div>
       <div class="card-divider"></div>
-      <div class="shot-wrap shot-pair">
+      <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/shot-sale-1.png" alt="自己資本・手取り額の推移チャート" loading="lazy"></div>
-        </div>
-        <div class="shot-frame">
-          <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/shot-sale-2.png" alt="時価評価バランスシート図" loading="lazy"></div>
+          <div class="shot-stage"><img src="img/promo-baikyaku.jpg" alt="不動産売却益計算シミュレーターの紹介画像" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
-        <p class="link-note">住宅ローン返済シミュレーターとのデータ連携機能搭載</p>
-        <a class="card-cta paid-cta" href="https://note.com/kirin34567/n/nfdf2cc5bfa55" target="_blank" rel="noopener">
+        <p class="lang-note en-only">※ Currently available in Japanese only</p>
+        <p class="link-note" data-i18n="ln2">住宅ローン返済シミュレーターとのデータ連携機能搭載</p>
+        <a class="card-cta paid-cta" data-i18n="cta-note" href="#" target="_blank" rel="noopener">
           noteで詳細を見る <span class="arrow">→</span>
         </a>
       </div>
     </div>
 
     <!-- 03 sumikae navi -->
-    <div class="card ticked" id="app-03">
+    <div class="card ticked" id="app-03" data-jp-only>
       <span class="tick-br"></span><span class="tick-bl"></span>
       <div class="card-top tint-sumikae">
         <span class="card-bignum">03</span>
         <div class="card-head">
           <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-sumikae-real" /></svg></span>
-          <h2>すみかえNAVI</h2>
+          <h2 data-i18n="n3">すみかえNAVI</h2>
         </div>
-        <p class="desc">売却と購入を同時に進める「住み替え」特有のスケジュールと資金繰りを可視化し、リスクを事前に把握。返済・売却シミュレーションデータを連携可能*。</p>
+        <p class="desc" data-i18n="d3">売却と購入を同時に進める「住み替え」特有のスケジュールと資金繰りを可視化し、リスクを事前に把握。返済・売却シミュレーションデータを連携可能*。</p>
       </div>
       <div class="card-divider"></div>
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/shot-sumikae.png" alt="すみかえNAVIのスケジュール工程表" loading="lazy"></div>
+          <div class="shot-stage"><img src="img/promo-sumikae.jpg" alt="すみかえNAVIの紹介画像" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
-        <p class="link-note">*住宅ローン返済シミュレーター、不動産売却計算シミュレーターとのデータ連携機能搭載</p>
-        <a class="card-cta paid-cta" href="https://note.com/kirin34567/n/nac0511ceec92" target="_blank" rel="noopener">
+        <p class="lang-note en-only">※ Currently available in Japanese only</p>
+        <p class="link-note" data-i18n="ln3">*住宅ローン返済シミュレーター、不動産売却計算シミュレーターとのデータ連携機能搭載</p>
+        <a class="card-cta paid-cta" data-i18n="cta-note" href="#" target="_blank" rel="noopener">
           noteで詳細を見る <span class="arrow">→</span>
         </a>
       </div>
     </div>
 
     <!-- 04 insights -->
-    <div class="card ticked" id="app-04">
+    <div class="card ticked" id="app-04" data-jp-only>
       <span class="tick-br"></span><span class="tick-bl"></span>
       <div class="card-top tint-insights">
         <span class="card-bignum">04</span>
@@ -1073,46 +1123,73 @@
           <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-insights-real" /></svg></span>
           <h2>Insights</h2>
         </div>
-        <p class="desc">住宅ローン、不動産、プレスリリース等のニュースを毎日自動で集約。その他、独自の分析レポートやコラムも掲載。</p>
+        <p class="desc" data-i18n="d4">住宅ローン、不動産、プレスリリース等のニュースを毎日自動で集約。その他、独自の分析レポートやコラムも掲載。</p>
       </div>
       <div class="card-divider"></div>
-      <div class="shot-wrap shot-pair">
+      <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/shot-insights-1.png" alt="金利の推移マーケットチャート" loading="lazy"></div>
-        </div>
-        <div class="shot-frame">
-          <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/shot-insights-2.png" alt="不動産ニュース一覧とカレンダー" loading="lazy"></div>
+          <div class="shot-stage stack">
+            <img src="img/shot-insights-1.png" alt="金利の推移マーケットチャート" loading="lazy">
+            <img src="img/shot-insights-2.png" alt="不動産ニュース一覧とカレンダー" loading="lazy">
+          </div>
         </div>
       </div>
       <div class="card-body">
-        <a class="card-cta" href="https://kirinsan4567.github.io/insights/" target="_blank" rel="noopener">
+        <p class="lang-note en-only">※ Currently available in Japanese only</p>
+        <a class="card-cta" data-i18n="cta-open" href="https://kirinsan4567.github.io/insights/" target="_blank" rel="noopener">
           アプリを開く <span class="arrow">→</span>
         </a>
       </div>
     </div>
 
     <!-- 05 kanrihi map -->
-    <div class="card ticked" id="app-05">
+    <div class="card ticked" id="app-05" data-jp-only>
       <span class="tick-br"></span><span class="tick-bl"></span>
       <div class="card-top tint-kanrihi">
         <span class="card-bignum">05</span>
         <div class="card-head">
           <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-kanrihi-real" /></svg></span>
-          <h2>東京マンション管理費・修繕費マップ</h2>
+          <h2 data-i18n="n5">東京マンション管理費・修繕費マップ</h2>
         </div>
-        <p class="desc">東京23区を中心としたマンションの管理費・修繕積立金を比較。エリア・築年数・規模・デベロッパー等の条件で絞り込みや比較ができます。</p>
+        <p class="desc" data-i18n="d5">東京23区を中心としたマンションの管理費・修繕積立金を比較。エリア・築年数・規模・デベロッパー等の条件で絞り込みや比較ができます。</p>
       </div>
       <div class="card-divider"></div>
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/shot-kanrihi.png" alt="東京マンション管理費・修繕費マップの地図と散布図" loading="lazy"></div>
+          <div class="shot-stage"><img src="img/promo-kanrihi.jpg" alt="東京マンション管理費・修繕費マップの紹介画像" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
-        <a class="card-cta" href="https://kirinsan4567.github.io/kanrihi/" target="_blank" rel="noopener">
+        <p class="lang-note en-only">※ Currently available in Japanese only</p>
+        <a class="card-cta" data-i18n="cta-open" href="https://kirinsan4567.github.io/kanrihi/" target="_blank" rel="noopener">
+          アプリを開く <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 06 seikatsu map -->
+    <div class="card ticked" id="app-06">
+      <span class="tick-br"></span><span class="tick-bl"></span>
+      <div class="card-top tint-seikatsu">
+        <span class="card-bignum">06</span>
+        <div class="card-head">
+          <span class="head-icon"><svg viewBox="0 0 40 40"><use href="#icon-seikatsu-real" /></svg></span>
+          <h2 data-i18n="n6">生活利便性マップ</h2>
+        </div>
+        <p class="desc" data-i18n="d6">東京23区の暮らしやすさを地図で可視化。店の集積度・路線数・都心アクセスをヒートマップで確認でき、地図をクリックすると徒歩圏の駅・店舗数と利便性スコアを表示。目的地までの経路検索にも対応。</p>
+      </div>
+      <div class="card-divider"></div>
+      <div class="shot-wrap">
+        <div class="shot-frame">
+          <div class="shot-chrome"><span></span><span></span><span></span></div>
+          <div class="shot-stage"><img src="img/promo-seikatsu.jpg" alt="生活利便性マップの紹介画像" loading="lazy"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="lang-note en-only">※ Currently available in Japanese only. An English version is under consideration.</p>
+        <a class="card-cta" data-i18n="cta-open" href="https://seikatsu-map.pages.dev/" target="_blank" rel="noopener">
           アプリを開く <span class="arrow">→</span>
         </a>
       </div>
@@ -1122,37 +1199,37 @@
 </div>
 
 <div class="faq-wrap" id="faq">
-  <p class="grid-heading">FAQ（よくある質問）</p>
+  <p class="grid-heading" data-i18n="h-faq">FAQ（よくある質問）</p>
   <div class="lifecycle-panel faq-panel">
 
     <div class="faq-item">
-      <p class="faq-q"><span class="q-mark">Q.</span>このサイトは何ですか？</p>
-      <p class="faq-a">住宅ローンの返済、売却益の試算、住み替えの資金計画など、住まいに関する意思決定を数字で支えるアプリをまとめたポータルサイトです。個人開発者「KIRIN」が制作・運営しています。</p>
+      <p class="faq-q"><span class="q-mark">Q.</span><span data-i18n="fq1">このサイトは何ですか？</span></p>
+      <p class="faq-a" data-i18n="fa1">住宅ローンの返済、売却益の試算、住み替えの資金計画、街の暮らしやすさの確認など、住まいに関する意思決定を数字で支えるアプリをまとめたポータルサイトです。個人開発者「KIRIN」が制作・運営しています。</p>
     </div>
 
     <div class="faq-item">
-      <p class="faq-q"><span class="q-mark">Q.</span>KIRINとは何者ですか？</p>
-      <p class="faq-a">KIRINは、不動産・住宅ローン分野の情報発信やシミュレーターを開発している個人のクリエイターです。不動産や街づくり、建築、アート、データ分析を好みとしています。</p>
+      <p class="faq-q"><span class="q-mark">Q.</span><span data-i18n="fq2">KIRINとは何者ですか？</span></p>
+      <p class="faq-a" data-i18n="fa2">KIRINは、不動産・住宅ローン分野の情報発信やシミュレーターを開発している個人のクリエイターです。不動産や街づくり、建築、アート、データ分析を好みとしています。</p>
     </div>
 
     <div class="faq-item">
-      <p class="faq-q"><span class="q-mark">Q.</span>このアプリは安全ですか？入力した情報はどこかに送られますか？</p>
-      <p class="faq-a">各シミュレーターは、入力いただいた情報をお使いのブラウザ内で計算する設計を基本としており、外部のサーバーに送信・保存することはありません。なお、サイトの改善のためGoogle Analyticsを利用しており、閲覧ページや滞在時間などの匿名化されたアクセス情報のみを取得しています。入力していただいた金額やご家庭の情報がGoogle Analyticsに送られることはありません。詳しくは<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleのプライバシーポリシー</a>をご確認ください。</p>
+      <p class="faq-q"><span class="q-mark">Q.</span><span data-i18n="fq3">このアプリは安全ですか？入力した情報はどこかに送られますか？</span></p>
+      <p class="faq-a" data-i18n="fa3">各シミュレーターは、入力いただいた情報をお使いのブラウザ内で計算する設計を基本としており、外部のサーバーに送信・保存することはありません。なお、サイトの改善のためGoogle Analyticsを利用しており、閲覧ページや滞在時間などの匿名化されたアクセス情報のみを取得しています。入力していただいた金額やご家庭の情報がGoogle Analyticsに送られることはありません。詳しくは<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Googleのプライバシーポリシー</a>をご確認ください。</p>
     </div>
 
     <div class="faq-item">
-      <p class="faq-q"><span class="q-mark">Q.</span>料金はかかりますか？</p>
-      <p class="faq-a">住宅ローン返済シミュレーター、Insights、東京マンション管理費・修繕費マップは無料でご利用いただけます。不動産売却益計算シミュレーターとすみかえNAVIは有料で、note.comでご購入いただくとアプリへのリンクとパスコードが発行されます。</p>
+      <p class="faq-q"><span class="q-mark">Q.</span><span data-i18n="fq4">料金はかかりますか？</span></p>
+      <p class="faq-a" data-i18n="fa4">住宅ローン返済シミュレーター、Insights、東京マンション管理費・修繕費マップ、生活利便性マップは無料でご利用いただけます。不動産売却益計算シミュレーターとすみかえNAVIは有料で、note.comでご購入いただくとアプリへのリンクとパスコードが発行されます。</p>
     </div>
 
     <div class="faq-item">
-      <p class="faq-q"><span class="q-mark">Q.</span>計算結果はそのまま信じてよいですか？</p>
-      <p class="faq-a">各アプリの結果は一般的な計算ロジックに基づく「試算」です。実際の金利・税額・審査条件等は金融機関や税理士等の専門家にご確認のうえ、ご自身の判断でご利用ください。</p>
+      <p class="faq-q"><span class="q-mark">Q.</span><span data-i18n="fq5">計算結果はそのまま信じてよいですか？</span></p>
+      <p class="faq-a" data-i18n="fa5">各アプリの結果は一般的な計算ロジックに基づく「試算」です。実際の金利・税額・審査条件等は金融機関や税理士等の専門家にご確認のうえ、ご自身の判断でご利用ください。</p>
     </div>
 
     <div class="faq-item">
-      <p class="faq-q"><span class="q-mark">Q.</span>不具合の報告や質問をしたい場合は？</p>
-      <p class="faq-a">画面右上のXアカウント（<a href="https://x.com/kirinsan4567" target="_blank" rel="noopener">@kirinsan4567</a>）のDMにて受け付けています。アプリの不具合報告、使い方のご質問など、お気軽にご連絡ください。</p>
+      <p class="faq-q"><span class="q-mark">Q.</span><span data-i18n="fq6">不具合の報告や質問をしたい場合は？</span></p>
+      <p class="faq-a" data-i18n="fa6">画面右上のXアカウント（<a href="https://x.com/kirinsan4567" target="_blank" rel="noopener">@kirinsan4567</a>）のDMにて受け付けています。アプリの不具合報告、使い方のご質問など、お気軽にご連絡ください。</p>
     </div>
 
   </div>
@@ -1195,6 +1272,9 @@
     const cards = document.querySelectorAll('.grid .card[id]');
 
     // カードからメニュー項目を自動生成（カードを足せばメニューにも出る）
+    window.buildAppMenu = function () {
+    list.innerHTML = '';
+    const en = document.documentElement.lang === 'en';
     cards.forEach(card => {
       const num = card.querySelector('.card-bignum')?.textContent.trim() || '';
       const name = card.querySelector('h2')?.textContent.trim() || '';
@@ -1206,16 +1286,19 @@
           '<span class="menu-num">' + num + '</span>' +
           '<span class="menu-icon"><svg viewBox="0 0 40 40"><use href="' + icon + '" /></svg></span>' +
           '<span class="menu-name"></span>' +
-          '<span class="menu-tag' + (paid ? ' paid' : '') + '">' + (paid ? '有料' : '無料') + '</span>' +
+          '<span class="menu-tag' + (paid ? ' paid' : '') + '">' + (paid ? (en ? 'Paid' : '有料') : (en ? 'Free' : '無料')) + '</span>' +
         '</a>';
       li.querySelector('.menu-name').textContent = name;
       list.appendChild(li);
     });
+    };
+    buildAppMenu();
 
     function setOpen(open) {
       body.classList.toggle('menu-open', open);
       btn.setAttribute('aria-expanded', String(open));
-      btn.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+      const en = document.documentElement.lang === 'en';
+      btn.setAttribute('aria-label', open ? (en ? 'Close menu' : 'メニューを閉じる') : (en ? 'Open menu' : 'メニューを開く'));
       if (open) drawer.querySelector('a')?.focus();
     }
     btn.addEventListener('click', () => setOpen(!body.classList.contains('menu-open')));
@@ -1243,6 +1326,101 @@
     const onScroll = () => body.classList.toggle('scrolled', window.scrollY > 40);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
+  })();
+
+  // ---------- 日本語 / English ----------
+  // ブラウザの言語が日本語以外なら英語で表示。切替ボタンで選んだ言語は次回も維持。
+  (function () {
+    const EN = {
+      title: 'KIRIN Real Estate Apps | Wise Home Planning',
+      logo: 'Wise Home Planning',
+      h1: 'Repay. Sell.<br>Move.',
+      lede: 'Apps that support how you manage, plan and make key decisions about your home.',
+      'h-life': 'How the apps fit together',
+      'h-cards': 'App overview & links',
+      'h-faq': 'FAQ',
+      'm-apps': 'Apps',
+      'm-about': 'About this site',
+      q1: 'Variable-rate mortgage on your home &mdash;<br>still OK?',
+      a1: 'Mortgage Repayment<br>Simulator',
+      l1: 'Check the repayment impact',
+      q2: 'If you sell, how much will you keep?',
+      a2: 'Property Sale<br>Profit Simulator',
+      l2: 'Estimate your sale profit',
+      q3: 'Are the cash flow and schedule<br>for your next home realistic?',
+      l3: 'Plan and review your home move',
+      sky: 'What&rsquo;s happening in housing?',
+      q4: 'Where are the real estate<br>and mortgage markets now?',
+      l4: 'Track industry and interest-rate trends',
+      q5: 'Are that condo&rsquo;s management<br>and repair fees high?',
+      a5: 'Tokyo Condo Management<br>&amp; Repair Fee Map',
+      l5: 'Compare fee benchmarks',
+      q6: 'Is that area<br>easy to live in?',
+      a6: 'Livability Map',
+      l6: 'Check convenience on the map',
+      n1: 'Mortgage Repayment Simulator',
+      d1: 'Goes as far as interest-rate scenarios, prepayments and Japan&rsquo;s mortgage tax credit, so you can compare future repayments scenario by scenario.',
+      n2: 'Property Sale Profit Simulator',
+      d2: 'Covers capital gains tax on real estate, depreciation and the &yen;30 million special deduction for selling your home, and calculates the gain or loss on selling a condo or house. Also supports pair loans.',
+      ln2: 'Shares data with the Mortgage Repayment Simulator',
+      n3: 'Sumikae NAVI',
+      d3: 'Visualizes the schedule and cash flow unique to a home transition &mdash; selling and buying at the same time &mdash; so you can spot risks in advance. Can import data from the repayment and sale simulators*.',
+      ln3: '*Shares data with the Mortgage Repayment Simulator and the Property Sale Profit Simulator',
+      d4: 'Collects news on mortgages, real estate and press releases automatically every day, along with original analysis reports and columns.',
+      n5: 'Tokyo Condo Management &amp; Repair Fee Map',
+      d5: 'Compare condominium management fees and repair reserve funds, centered on Tokyo&rsquo;s 23 wards. Filter and compare by area, building age, size, developer and more.',
+      n6: 'Livability Map',
+      d6: 'Shows how livable Tokyo&rsquo;s 23 wards are on a map. See shop density, number of rail lines and access to central Tokyo as a heat map, and click any spot to see nearby stations, shop counts and a convenience score within walking distance. Also offers route search to your destination.',
+      'cta-open': 'Open app <span class="arrow">&rarr;</span>',
+      'cta-note': 'View on note (Japanese) <span class="arrow">&rarr;</span>',
+      fq1: 'What is this site?',
+      fa1: 'A portal for apps that back up housing decisions with numbers &mdash; mortgage repayments, sale profit estimates, cash planning for a home move, checking how livable an area is, and more. It is created and run by KIRIN, an independent developer.',
+      fq2: 'Who is KIRIN?',
+      fa2: 'KIRIN is an independent creator who shares views on real estate and mortgages and builds simulators. Interests include real estate, urban development, architecture, art and data analysis.',
+      fq3: 'Is it safe? Is the information I enter sent anywhere?',
+      fa3: 'The simulators are designed to run their calculations in your browser and do not send or store what you enter on external servers. To improve the site we use Google Analytics, which collects only anonymized access data such as pages viewed and time on page. The amounts and household details you enter are never sent to Google Analytics. For details, see <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google&rsquo;s Privacy Policy</a>.',
+      fq4: 'Is there a fee?',
+      fa4: 'The Mortgage Repayment Simulator, Insights, the Tokyo Condo Management &amp; Repair Fee Map and the Livability Map are free. The Property Sale Profit Simulator and Sumikae NAVI are paid: when you purchase them on note.com (in Japanese), you receive a link to the app and a passcode.',
+      fq5: 'Can I rely on the results as they are?',
+      fa5: 'Each app&rsquo;s results are estimates based on general calculation logic. Please confirm actual interest rates, tax amounts, lending criteria and so on with financial institutions, tax accountants or other professionals, and use the results at your own discretion.',
+      fq6: 'How do I report a bug or ask a question?',
+      fa6: 'Please send a DM to our X account (<a href="https://x.com/kirinsan4567" target="_blank" rel="noopener">@kirinsan4567</a>). Bug reports and questions about how to use the apps are welcome.'
+    };
+    const nodes = [...document.querySelectorAll('[data-i18n]')];
+    nodes.forEach(el => { el._ja = el.innerHTML; });
+    const jaTitle = document.title;
+    const buttons = document.querySelectorAll('.lang-switch button');
+
+    function apply(lang) {
+      const en = lang === 'en';
+      document.documentElement.lang = en ? 'en' : 'ja';
+      document.title = en ? EN.title : jaTitle;
+      nodes.forEach(el => {
+        const k = el.getAttribute('data-i18n');
+        el.innerHTML = en && EN[k] != null ? EN[k] : el._ja;
+      });
+      buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === (en ? 'en' : 'ja'))));
+      if (window.buildAppMenu) window.buildAppMenu();
+      const mb = document.querySelector('.menu-btn');
+      if (mb && !document.body.classList.contains('menu-open')) mb.setAttribute('aria-label', en ? 'Open menu' : 'メニューを開く');
+    }
+    function detect() {
+      try {
+        const q = new URLSearchParams(location.search).get('lang');
+        if (q === 'en' || q === 'ja') return q;
+      } catch (_) {}
+      try {
+        const saved = localStorage.getItem('kirin-lang');
+        if (saved === 'en' || saved === 'ja') return saved;
+      } catch (_) {}
+      const first = (navigator.languages && navigator.languages[0]) || navigator.language || 'ja';
+      return /^ja\b/i.test(first) ? 'ja' : 'en';
+    }
+    buttons.forEach(b => b.addEventListener('click', () => {
+      apply(b.dataset.lang);
+      try { localStorage.setItem('kirin-lang', b.dataset.lang); } catch (_) {}
+    }));
+    apply(detect());
   })();
 </script>
 
