@@ -277,6 +277,41 @@
   }
   .hero-content .hero-note { margin-top: 10px; font-size: 13px; color: var(--cyan-bright); }
 
+  /* ---------- 紹介画像の拡大表示（枠外クリックで閉じる） ---------- */
+  img.zoomable { cursor: zoom-in; }
+  .lightbox {
+    position: fixed; inset: 0; z-index: 80;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: rgba(5,14,26,0.86);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    cursor: zoom-out;
+  }
+  .lightbox.open { opacity: 1; visibility: visible; }
+  .lightbox img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto; height: auto;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px rgba(155,232,221,0.25), 0 24px 60px -12px rgba(0,0,0,0.8);
+    cursor: default;
+  }
+  .lightbox-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 44px; height: 44px;
+    border: 1.5px solid #fff; border-radius: 50%;
+    background: rgba(12,33,56,0.7);
+    color: #fff; font-size: 22px; line-height: 1;
+    cursor: pointer;
+  }
+  .lightbox-close:focus-visible { outline: 2px solid var(--cyan-bright); outline-offset: 3px; }
+  body.lightbox-open { overflow: hidden; }
+  @media (prefers-reduced-motion: reduce) { .lightbox { transition: none; } }
+
   /* ---------- hero with photo ---------- */
   .hero-bg-wrap {
     position: relative;
@@ -910,6 +945,10 @@
   <button type="button" data-lang="en" lang="en">EN</button>
 </div>
 <div class="menu-backdrop" aria-hidden="true"></div>
+<div class="lightbox" role="dialog" aria-modal="true" aria-label="画像の拡大表示" hidden>
+  <button type="button" class="lightbox-close" aria-label="閉じる">&times;</button>
+  <img alt="">
+</div>
 <nav class="menu-drawer" id="app-menu" aria-label="アプリメニュー">
   <p class="menu-group-title" data-i18n="m-apps">アプリ一覧</p>
   <ul class="menu-list" id="menu-apps"></ul>
@@ -1049,7 +1088,7 @@
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/promo-loan.jpg" alt="住宅ローン返済シミュレーターの紹介画像" loading="lazy"></div>
+          <div class="shot-stage"><img class="zoomable" data-full="img/promo-loan-full.jpg" src="img/promo-loan.jpg" alt="住宅ローン返済シミュレーターの紹介画像" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
@@ -1075,7 +1114,7 @@
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/promo-baikyaku.jpg" alt="不動産売却益計算シミュレーターの紹介画像" loading="lazy"></div>
+          <div class="shot-stage"><img class="zoomable" data-full="img/promo-baikyaku-full.jpg" src="img/promo-baikyaku.jpg" alt="不動産売却益計算シミュレーターの紹介画像" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
@@ -1102,7 +1141,7 @@
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/promo-sumikae.jpg" alt="すみかえNAVIの紹介画像" loading="lazy"></div>
+          <div class="shot-stage"><img class="zoomable" data-full="img/promo-sumikae-full.jpg" src="img/promo-sumikae.jpg" alt="すみかえNAVIの紹介画像" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
@@ -1158,7 +1197,7 @@
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/promo-kanrihi.jpg" alt="東京マンション管理費・修繕費マップの紹介画像" loading="lazy"></div>
+          <div class="shot-stage"><img class="zoomable" data-full="img/promo-kanrihi-full.jpg" src="img/promo-kanrihi.jpg" alt="東京マンション管理費・修繕費マップの紹介画像" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
@@ -1184,7 +1223,7 @@
       <div class="shot-wrap">
         <div class="shot-frame">
           <div class="shot-chrome"><span></span><span></span><span></span></div>
-          <div class="shot-stage"><img src="img/promo-seikatsu.jpg" alt="生活利便性マップの紹介画像" loading="lazy"></div>
+          <div class="shot-stage"><img class="zoomable" data-full="img/promo-seikatsu-full.jpg" src="img/promo-seikatsu.jpg" alt="生活利便性マップの紹介画像" loading="lazy"></div>
         </div>
       </div>
       <div class="card-body">
@@ -1328,6 +1367,38 @@
     onScroll();
   })();
 
+  // ---------- 紹介画像の拡大表示 ----------
+  (function () {
+    const box = document.querySelector('.lightbox');
+    const big = box.querySelector('img');
+    const closeBtn = box.querySelector('.lightbox-close');
+    let lastFocus = null;
+    function open(src, alt) {
+      lastFocus = document.activeElement;
+      big.src = src; big.alt = alt || '';
+      box.hidden = false;
+      requestAnimationFrame(() => box.classList.add('open'));
+      document.body.classList.add('lightbox-open');
+      closeBtn.focus();
+    }
+    function close() {
+      box.classList.remove('open');
+      document.body.classList.remove('lightbox-open');
+      setTimeout(() => { box.hidden = true; big.removeAttribute('src'); }, 200);
+      if (lastFocus) lastFocus.focus();
+    }
+    document.querySelectorAll('img.zoomable').forEach(img => {
+      img.tabIndex = 0;
+      img.setAttribute('role', 'button');
+      const go = () => open(img.dataset.full || img.src, img.alt);
+      img.addEventListener('click', go);
+      img.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
+    // 画像以外（暗い幕・×）をクリックしたら閉じる
+    box.addEventListener('click', e => { if (e.target !== big) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !box.hidden) close(); });
+  })();
+
   // ---------- 日本語 / English ----------
   // ブラウザの言語が日本語以外なら英語で表示。切替ボタンで選んだ言語は次回も維持。
   (function () {
@@ -1401,6 +1472,8 @@
       });
       buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === (en ? 'en' : 'ja'))));
       if (window.buildAppMenu) window.buildAppMenu();
+      const lb = document.querySelector('.lightbox');
+      if (lb) { lb.setAttribute('aria-label', en ? 'Enlarged image' : '画像の拡大表示'); lb.querySelector('.lightbox-close').setAttribute('aria-label', en ? 'Close' : '閉じる'); }
       const mb = document.querySelector('.menu-btn');
       if (mb && !document.body.classList.contains('menu-open')) mb.setAttribute('aria-label', en ? 'Open menu' : 'メニューを開く');
     }
