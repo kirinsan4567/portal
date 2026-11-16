@@ -629,6 +629,19 @@
     flex-direction: column;
     overflow: hidden;
   }
+  /* 左右のカードで「説明文の下の仕切り線・画像・ボタン」の位置を揃える。
+     各カードの4ブロック（説明／仕切り線／画像／ボタン）を親グリッドの行に乗せ、
+     同じ段の左右で高さの大きい方に合わせる */
+  @supports (grid-template-rows: subgrid) {
+    .grid { row-gap: 0; }
+    .card {
+      display: grid;
+      grid-row: span 4;
+      grid-template-rows: subgrid;
+      row-gap: 0;
+      margin-bottom: 22px;
+    }
+  }
   .card-top {
     position: relative;
     overflow: hidden;
